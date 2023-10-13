@@ -1,0 +1,17 @@
+.navbar {
+  ul {
+    display: flex;
+    justify-content: center;
+    padding: 0.6rem;
+    margin: 0;
+    list-style: none;
+    gap: 15px;
+
+    li {
+      a {
+        text-decoration: none;
+        color: black;
+      }
+    }
+  }
+}
