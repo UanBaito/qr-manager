@@ -1,5 +1,5 @@
 type employee = {
-  id: number;
+  id: string;
   name: string;
   email: string;
   company: string;
@@ -8,7 +8,7 @@ type employee = {
 };
 
 type event = {
-  id: number;
+  id: string;
   name: string;
   created_at: Date;
 };
