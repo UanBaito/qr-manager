@@ -9,7 +9,6 @@ export default async function getEvent(id: string) {
   client.release();
   results.rows.forEach((event) => {
     event.created_at = JSON.parse(JSON.stringify(event.created_at));
-    console.log(event.created_at);
   });
   return results.rows;
 }

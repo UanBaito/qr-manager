@@ -11,4 +11,6 @@ type event = {
   id: string;
   name: string;
   created_at: Date;
+  /// print button
+  print?: React.ReactNode;
 };

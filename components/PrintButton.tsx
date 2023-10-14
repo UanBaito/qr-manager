@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { postQr } from "../pages/api/postQr";
 
 export default function PrintButton({
-  event,
-  employee,
+  event_id,
+  employee_id,
 }: {
-  event: event;
-  employee: employee;
+  event_id: string;
+  employee_id: string;
 }) {
-  async function handlePrintClick() {
-    const qrCodeString = postQr(employee.id, event.id);
-  }
-
-  return <Link href={"/qr"}></Link>;
+  return (
+    <a
+      target="_blank"
+      href={`/qr?employee_id=${employee_id}&event_id=${event_id}`}
+    >
+      Print
+    </a>
+  );
 }
