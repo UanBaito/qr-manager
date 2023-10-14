@@ -9,10 +9,9 @@ export async function postQr(employee_id: string, event_id: string) {
     [employee_id, event_id]
   );
   const results = await client.query(
-    "INSERT INTO qrcodes(number) VALUES (1) RETURNING string;"
+    "INSERT INTO qrcodes DEFAULT VALUES RETURNING qrcode_string;"
   );
   await client.query("COMMIT;");
   client.release();
-
   return results.rows;
 }

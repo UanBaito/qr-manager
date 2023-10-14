@@ -13,4 +13,5 @@ type event = {
   created_at: Date;
   /// print button
   print?: React.ReactNode;
+  has_printed_qr?: boolean | string;
 };

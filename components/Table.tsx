@@ -3,10 +3,11 @@ import styles from "./Table.module.scss";
 
 export default function Table({
   data,
+  title,
   viewEndpoint,
 }: {
   data: any[];
-
+  title: string;
   viewEndpoint: string;
 }) {
   const dataRows = data.map((dataRow) => {
@@ -28,6 +29,7 @@ export default function Table({
 
   return (
     <table className={styles.table}>
+      <caption>{title}</caption>
       <thead>
         <tr>{columnsHead}</tr>
       </thead>
