@@ -6,6 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "dotenv": "^16.3.1",
     "next": "latest",
     "pg": "^8.11.3",
     "qrcode": "^1.5.3",
