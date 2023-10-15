@@ -12,7 +12,7 @@ export default function PrintButton({
       target="_blank"
       href={`/qr?employee_id=${employee_id}&event_id=${event_id}`}
     >
-      Print
+      Imprimir
     </a>
   );
 }

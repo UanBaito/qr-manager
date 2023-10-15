@@ -6,7 +6,7 @@ export default function events({ eventsList }) {
   return (
     <Layout>
       <section>
-        <Table data={eventsList} title="Events" viewEndpoint={"/events/"} />
+        <Table data={eventsList} title="Eventos" viewEndpoint={"/events/"} />
       </section>
     </Layout>
   );

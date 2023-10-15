@@ -19,7 +19,15 @@ export default function Table({
   const columns = [];
   for (const column in data[0]) {
     if (column !== "id") {
-      columns.push(column);
+      if (column === "has_printed_qr") {
+        columns.push("¿Ha imprimido el código QR?");
+      } else if (column === "name") {
+        columns.push("Nombre");
+      } else if (column === "print") {
+        columns.push("Imprimir");
+      } else {
+        columns.push(column);
+      }
     }
   }
 
@@ -59,7 +67,7 @@ export function TableRow({
     <tr>
       {mappedCells}
       <td>
-        <Link href={viewEndpoint + data.id}>View</Link>
+        <Link href={viewEndpoint + data.id}>Ver</Link>
       </td>
     </tr>
   );

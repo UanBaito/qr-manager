@@ -1,7 +1,7 @@
 import Layout from "../../components/Layout";
 import PrintButton from "../../components/PrintButton";
 import Table from "../../components/Table";
-import getEmployee from "../api/getEmployee";
+import { getEmployee } from "../api/getEmployee";
 import getEventsFromEmployee from "../api/getEventsFromEmployee";
 import styles from "../../styles/employess.module.scss";
 
@@ -12,11 +12,14 @@ export default function Employee({
   employee: employee;
   events: any;
 }) {
-  employee = employee[0];
+  employee = employee[0]; ///TODO fix this
 
-  const mappedEvents = events.map((event: event) => {
+  /// I do this because I want to modify one of the properties, but dont want to change the original
+  /// array in case I may need it later
+  const eventsArrayCopy = [...events];
+  eventsArrayCopy.forEach((event: event) => {
     event.print = <PrintButton employee_id={employee.id} event_id={event.id} />;
-    event.has_printed_qr = event.has_printed_qr ? "Yes" : "No";
+    event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
   });
   console.log(events);
   ///TODO: fix this, use a copy of the original array instead
@@ -24,11 +27,11 @@ export default function Employee({
   return (
     <Layout>
       <section className={styles.container}>
-        <h1>Employee</h1>
+        <h1>Empleado</h1>
         <div className={styles.info}>
           <ul>
             <li>
-              <h2>Name: </h2>
+              <h2>Nombre: </h2>
               <span>{employee.name}</span>
             </li>
             <li>
@@ -40,18 +43,18 @@ export default function Employee({
               <span>{employee.cedula}</span>
             </li>
             <li>
-              <h2>Company: </h2>
+              <h2>Compañia: </h2>
               <span>{employee.company}</span>
             </li>
             <li>
-              <h2>Permission: </h2>
+              <h2>Permisos: </h2>
               <span>{employee.permission}</span>
             </li>
           </ul>
         </div>
         <Table
-          data={events}
-          title="Allowed events for employee"
+          data={eventsArrayCopy}
+          title="Entrada permitida a los eventos:"
           viewEndpoint="/events/"
         />
       </section>

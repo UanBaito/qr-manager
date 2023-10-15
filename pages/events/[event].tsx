@@ -3,6 +3,7 @@ import Table from "../../components/Table";
 import getEmployeesFromEvent from "../api/getEmployeesFromEvent";
 import getEvent from "../api/getEvent";
 import styles from "../../styles/event.module.scss";
+import PrintButton from "../../components/PrintButton";
 
 export default function Event({
   employees,
@@ -11,22 +12,31 @@ export default function Event({
   employees: any;
   event: event;
 }) {
-  console.log(event);
+  console.log(employees);
+
+  const EmployeesArrayCopy = [...employees];
+  EmployeesArrayCopy.forEach((employee: employee) => {
+    employee.print = (
+      <PrintButton employee_id={employee.id} event_id={event.id} />
+    );
+    employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
+  });
+
   return (
     <Layout>
       <section className={styles.container}>
-        <h1>Event</h1>
+        <h1>Evento</h1>
         <div className={styles.info}>
           <ul>
             <li>
-              <h2>Name: </h2>
+              <h2>Nombre del evento: </h2>
               <span>{event.name}</span>
             </li>
           </ul>
         </div>
         <Table
-          data={employees}
-          title="Employees assigned to this event"
+          data={EmployeesArrayCopy}
+          title="Empleados asignados a este evento"
           viewEndpoint="/employees/"
         />
       </section>
@@ -39,5 +49,6 @@ export async function getServerSideProps(context) {
   const eventResult = await getEvent(id);
   const event = eventResult[0];
   const employees = await getEmployeesFromEvent(id);
+  console.log(employees);
   return { props: { employees, event } };
 }

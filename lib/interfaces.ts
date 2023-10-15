@@ -5,6 +5,8 @@ type employee = {
   company: string;
   permission: string;
   cedula: number;
+  print?: React.ReactNode;
+  has_printed_qr?: boolean | string;
 };
 
 type event = {
@@ -14,4 +16,10 @@ type event = {
   /// print button
   print?: React.ReactNode;
   has_printed_qr?: boolean | string;
+};
+
+type user = {
+  id: string;
+  username: string;
+  password: string;
 };
