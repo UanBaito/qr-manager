@@ -7,4 +7,4 @@ export default async function getEmployees() {
   return results.rows;
 }
 
-///TODO: separate this function into handle and getData
+///TODO: separate this function into handle and getEmployee

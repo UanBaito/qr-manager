@@ -7,7 +7,11 @@ export default function Employees({ employessList }) {
   return (
     <Layout>
       <section>
-        <Table data={employessList} viewEndpoint="/employees/" />
+        <Table
+          data={employessList}
+          viewEndpoint="/employees/"
+          title="employees"
+        />
       </section>
     </Layout>
   );

@@ -3,10 +3,11 @@ import styles from "./Table.module.scss";
 
 export default function Table({
   data,
+  title,
   viewEndpoint,
 }: {
   data: any[];
-
+  title: string;
   viewEndpoint: string;
 }) {
   const dataRows = data.map((dataRow) => {
@@ -18,7 +19,16 @@ export default function Table({
   const columns = [];
   for (const column in data[0]) {
     if (column !== "id") {
-      columns.push(column);
+      if (column === "has_printed_qr") {
+        columns.push("¿Ha imprimido el código QR?");
+      } else if (column === "name") {
+        columns.push("Nombre");
+      } else if (column === "print") {
+        columns.push("Imprimir");
+      } else if (column === "created_at") {
+      } else {
+        columns.push(column);
+      }
     }
   }
 
@@ -28,6 +38,7 @@ export default function Table({
 
   return (
     <table className={styles.table}>
+      <caption>{title}</caption>
       <thead>
         <tr>{columnsHead}</tr>
       </thead>
@@ -45,7 +56,8 @@ export function TableRow({
 }) {
   const cells = [];
   for (const column in data) {
-    if (column !== "id") {
+    if (column === "id" || column === "created_at") {
+    } else {
       cells.push(data[column]);
     }
   }
@@ -57,7 +69,7 @@ export function TableRow({
     <tr>
       {mappedCells}
       <td>
-        <Link href={viewEndpoint + data.id}>View</Link>
+        <Link href={viewEndpoint + data.id}>Ver</Link>
       </td>
     </tr>
   );

@@ -1,6 +1,7 @@
 .table {
   width: 100%;
   text-align: center;
+  border: 1px solid black;
   thead {
     tr {
       width: 20%;
@@ -8,6 +9,7 @@
   }
   tbody {
     td {
+      text-transform: capitalize;
       padding: 5px;
     }
   }
