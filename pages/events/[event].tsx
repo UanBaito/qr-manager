@@ -13,7 +13,7 @@ export default function Event({
   event: event;
 }) {
   /// I do this because I want to modify one of the properties, but dont want to change the original
-  /// array in case I may need it later
+  /// object in case I may need it later
   const EmployeesArrayCopy = [...employees];
   EmployeesArrayCopy.forEach((employee: employee) => {
     employee.print = (

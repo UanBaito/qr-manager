@@ -8,7 +8,7 @@ export async function getEmployee(id: string) {
     [id]
   );
   client.release();
-  return results.rows;
+  return results.rows[0];
 }
 
 export default async function handler(

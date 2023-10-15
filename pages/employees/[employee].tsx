@@ -15,7 +15,7 @@ export default function Employee({
   employee = employee[0]; ///TODO fix this
 
   /// I do this because I want to modify one of the properties, but dont want to change the original
-  /// array in case I may need it later
+  /// object in case I may need it later
   const eventsArrayCopy = [...events];
   eventsArrayCopy.forEach((event: event) => {
     event.print = <PrintButton employee_id={employee.id} event_id={event.id} />;
