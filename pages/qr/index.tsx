@@ -17,31 +17,32 @@ export default function Qr({
     return <h1>Error creating qr code</h1>;
   }
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [canvasState, setCanvasState] = useState(null);
 
   useEffect(() => {
-    if (canvasRef.current !== null) {
-      const paintQr = async () => {
-        const ctx = canvasRef.current.getContext("2d");
-        await QRCode.toCanvas(
-          canvasRef.current,
-          "http://localhost:3000/qr/" + string
-        );
-        ctx.strokeText(employee.name, 0, 0);
-        ctx.fillStyle = "blue";
-        ctx.fillRect(0, 100, 100, 100);
+    const fetchQr = async () => {
+      const qrStringResult = await QRCode.toDataURL(string);
+      const response = await fetch("http://localhost:3000/api/image", {
+        method: "POST",
+        body: JSON.stringify({
+          qrstring: qrStringResult,
+          employeeInfo: employee,
+        }),
+      });
+      const content = await response.json();
 
-        window.print();
-        window.close();
-      };
-      paintQr();
-    }
-  }, [canvasRef.current]);
-  if (canvasRef.current) {
+      setCanvasState(content);
+    };
+    fetchQr();
+  }, []);
+
+  if (!canvasState) {
+    return;
   }
+
   return (
     <>
-      <canvas width={400} height={400} ref={canvasRef} id="canvas" />
+      <img src={canvasState} />
     </>
   );
 }
