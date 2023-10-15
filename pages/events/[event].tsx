@@ -12,8 +12,6 @@ export default function Event({
   employees: any;
   event: event;
 }) {
-  console.log(employees);
-
   const EmployeesArrayCopy = [...employees];
   EmployeesArrayCopy.forEach((employee: employee) => {
     employee.print = (
@@ -49,6 +47,6 @@ export async function getServerSideProps(context) {
   const eventResult = await getEvent(id);
   const event = eventResult[0];
   const employees = await getEmployeesFromEvent(id);
-  console.log(employees);
+
   return { props: { employees, event } };
 }

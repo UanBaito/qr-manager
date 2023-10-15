@@ -21,7 +21,7 @@ export default function Employee({
     event.print = <PrintButton employee_id={employee.id} event_id={event.id} />;
     event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
   });
-  console.log(events);
+
   ///TODO: fix this, use a copy of the original array instead
 
   return (

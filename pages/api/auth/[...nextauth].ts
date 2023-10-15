@@ -30,7 +30,7 @@ export default NextAuth({
           );
           client.release();
           const user: user = userResult.rows[0];
-          console.log(userResult, credentials);
+
           if (!user) {
             return null;
           }

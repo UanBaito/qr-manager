@@ -25,6 +25,7 @@ export default function Table({
         columns.push("Nombre");
       } else if (column === "print") {
         columns.push("Imprimir");
+      } else if (column === "created_at") {
       } else {
         columns.push(column);
       }
@@ -55,7 +56,8 @@ export function TableRow({
 }) {
   const cells = [];
   for (const column in data) {
-    if (column !== "id") {
+    if (column === "id" || column === "created_at") {
+    } else {
       cells.push(data[column]);
     }
   }

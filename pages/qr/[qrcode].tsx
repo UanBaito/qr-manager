@@ -24,7 +24,6 @@ export async function getServerSideProps(context) {
   try {
     const qrcode = context.params.qrcode;
     qrcodeResult = await getQrcode(qrcode);
-    console.log(qrcodeResult);
   } catch (err) {
     qrcodeResult = null;
     isError = true;
