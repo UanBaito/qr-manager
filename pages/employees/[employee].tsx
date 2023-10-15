@@ -22,8 +22,6 @@ export default function Employee({
     event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
   });
 
-  ///TODO: fix this, use a copy of the original array instead
-
   return (
     <Layout>
       <section className={styles.container}>
