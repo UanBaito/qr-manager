@@ -4,6 +4,7 @@ import styles from "../../styles/event.module.scss";
 import PrintButton from "../../components/PrintButton";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
+import CSVUpload from "../../components/CSVUpload";
 
 export default function Event({ eventID }) {
   const eventQuery = useQuery({
@@ -73,6 +74,7 @@ export default function Event({ eventID }) {
           title="Empleados asignados a este evento"
           viewEndpoint="/employees/"
         />
+        <CSVUpload />
       </section>
     </Layout>
   );

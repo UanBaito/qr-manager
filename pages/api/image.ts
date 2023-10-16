@@ -18,19 +18,20 @@ export default async function handler(
   });
   const capitalizedNames = capitalizedNamesArray.join(" ");
 
-  const canvas = createCanvas(800, 800);
+  const canvas = createCanvas(529.13385827, 64.251968504);
   const ctx = canvas.getContext("2d");
 
-  ctx.translate(300, 0);
-  ctx.rotate((Math.PI / 180) * 90);
+  // ctx.translate(300, 0);
+  // ctx.rotate((Math.PI / 180) * 90);
   ctx.fillStyle = "darkblue";
-  ctx.fillRect(0, 0, 800, 200);
+  ctx.fillRect(0, 0, 529.13385827, 68.251968504);
   ctx.fillStyle = "white";
-  ctx.fillRect(450, 20, 200, 160);
-  ctx.drawImage(qrcode, 20, 25);
-  ctx.drawImage(logo, 475, 25, 150, 150);
-  ctx.font = "48px Roboto";
+  ctx.fillRect(250, 0, 64.251968504, 64.251968504);
+  ctx.drawImage(qrcode, 0, 0, 64.251968504, 64.251968504);
+  ctx.drawImage(logo, 250, 0, 64.251968504, 64.251968504);
+  ctx.font = "16px Ubuntu";
   ctx.fillStyle = "white";
-  ctx.fillText(capitalizedNames, 200, 100);
+  ctx.fillText(capitalizedNames, 125, 36.251968504);
+
   res.send(JSON.stringify(canvas.toDataURL()));
 }

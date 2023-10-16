@@ -19,3 +19,25 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+html {
+  height: 1px !important;
+}
+next-route-announcer {
+  height: 1px !important;
+}
+
+@media print {
+  @page {
+    size: 528.13385827px 67.251968504px;
+    margin: 0;
+    break-after: avoid;
+    page-break-after: avoid;
+    overflow: hidden !important;
+  }
+
+  html,
+  div {
+    height: 60.251968504px !important;
+  }
+}

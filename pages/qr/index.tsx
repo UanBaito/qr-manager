@@ -40,7 +40,8 @@ export default function Qr({ eventID, employeeID }) {
     queryKey: ["image", qrcodeString],
     queryFn: async () => {
       const qrCodeDataURL = await QRCode.toDataURL(
-        "http://localhost:3000/qr/" + qrcodeString.qrcode_string
+        "http://localhost:3000/qr/" + qrcodeString.qrcode_string,
+        { errorCorrectionLevel: "H" }
       );
       const res = await fetch("http://localhost:3000/api/image", {
         method: "POST",

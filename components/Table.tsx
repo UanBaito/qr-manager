@@ -26,6 +26,8 @@ export default function Table({
       } else if (column === "print") {
         columns.push("Imprimir");
       } else if (column === "created_at") {
+      } else if (column === "cedula") {
+        columns.push("Cédula");
       } else {
         columns.push(column);
       }
