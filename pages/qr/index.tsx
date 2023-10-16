@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { postQr } from "../api/postQr";
 import QRCode from "qrcode";
 import { createCanvas } from "canvas";
-import { getEmployee } from "../api/getEmployee";
+import { getEmployee } from "../api/employee";
 
 export default function Qr({
   employee,

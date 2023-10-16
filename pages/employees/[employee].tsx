@@ -1,19 +1,53 @@
 import Layout from "../../components/Layout";
-import PrintButton from "../../components/PrintButton";
-import Table from "../../components/Table";
-import { getEmployee } from "../api/getEmployee";
-import getEventsFromEmployee from "../api/getEventsFromEmployee";
 import styles from "../../styles/employess.module.scss";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import Table from "../../components/Table";
+import PrintButton from "../../components/PrintButton";
 
-export default function Employee({
-  employee,
-  events,
-}: {
-  employee: employee;
-  events: any;
-}) {
-  /// I do this because I want to modify one of the properties, but dont want to change the original
-  /// object in case I may need it later
+export default function Employee({ employeeID }) {
+  const employeeQuery = useQuery({
+    queryKey: ["employee", employeeID],
+    queryFn: async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/employee?employeeID=" + employeeID
+      );
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      } else {
+        return await response.json();
+      }
+    },
+  });
+
+  const eventsQuery = useQuery({
+    queryKey: ["events", employeeID],
+    queryFn: async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/event?employeeID=" + employeeID
+      );
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      } else {
+        return await response.json();
+      }
+    },
+  });
+
+  if (employeeQuery.isLoading || eventsQuery.isLoading) {
+    return <>loading</>;
+  }
+
+  if (employeeQuery.isError || eventsQuery.isError) {
+    return <>error</>;
+  }
+
+  const employee = employeeQuery.data[0];
+  const events = eventsQuery.data;
+
+  // / I do this because I want to modify one of the properties, but dont want to change the original
+  // / object in case I may need it later
+
   const eventsArrayCopy = [...events];
   eventsArrayCopy.forEach((event: event) => {
     event.print = <PrintButton employee_id={employee.id} event_id={event.id} />;
@@ -59,8 +93,6 @@ export default function Employee({
 }
 
 export async function getServerSideProps(context) {
-  const id = context.params.employee;
-  const employee = await getEmployee(id);
-  const events = await getEventsFromEmployee(id);
-  return { props: { employee, events } };
+  const employeeID = context.params.employee;
+  return { props: { employeeID } };
 }

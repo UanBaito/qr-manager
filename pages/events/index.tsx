@@ -1,8 +1,29 @@
+import { useQuery } from "@tanstack/react-query";
 import Layout from "../../components/Layout";
 import Table from "../../components/Table";
-import getEvents from "../api/getEvents";
+import { getEvent } from "../api/event";
 
-export default function events({ eventsList }) {
+export default function events() {
+  const eventsQuery = useQuery({
+    queryKey: ["events"],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:3000/api/event");
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      }
+      return await response.json();
+    },
+  });
+
+  if (eventsQuery.isLoading) {
+    return <>loading</>;
+  }
+  if (eventsQuery.isError) {
+    return <>error</>;
+  }
+
+  const eventsList = eventsQuery.data;
+
   return (
     <Layout>
       <section>
@@ -10,10 +31,4 @@ export default function events({ eventsList }) {
       </section>
     </Layout>
   );
-}
-
-export async function getServerSideProps() {
-  const eventsList = await getEvents();
-
-  return { props: { eventsList } };
 }
