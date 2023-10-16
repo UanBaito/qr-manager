@@ -1,72 +1,81 @@
-import { useEffect, useRef, useState } from "react";
-import { postQr } from "../api/postQr";
+import { NextPageContext } from "next";
+import { useQuery } from "@tanstack/react-query";
 import QRCode from "qrcode";
-import { createCanvas } from "canvas";
-import { getEmployee } from "../api/employee";
 
-export default function Qr({
-  employee,
-  string,
-  isError,
-}: {
-  employee: employee;
-  string: string;
-  isError: boolean;
-}) {
-  if (isError) {
-    return <h1>Error creating qr code</h1>;
-  }
+export default function Qr({ eventID, employeeID }) {
+  const qrcodeQuery = useQuery({
+    queryKey: ["qrcode", employeeID, eventID],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:3000/api/qrcode", {
+        method: "POST",
+        body: JSON.stringify({ employeeID: employeeID, eventID: eventID }),
+      });
+      if (!res.ok) {
+        throw new Error("Something went wrong");
+      }
+      const qrcodeString = await res.json();
+      return qrcodeString;
+    },
+    refetchOnWindowFocus: false,
+  });
+  const employeeQuery = useQuery({
+    queryKey: ["employee", employeeID],
+    queryFn: async () => {
+      const res = await fetch(
+        "http://localhost:3000/api/employee?employeeID=" + employeeID
+      );
+      if (!res.ok) {
+        throw new Error("Something went wrong");
+      }
+      const employeeInfo = await res.json();
+      return employeeInfo[0];
+    },
+    refetchOnWindowFocus: false,
+  });
 
-  const [canvasState, setCanvasState] = useState(null);
+  const qrcodeString = qrcodeQuery.data;
+  const employeeInfo = employeeQuery.data;
 
-  useEffect(() => {
-    const fetchQr = async () => {
-      const qrStringResult = await QRCode.toDataURL(string);
-      const response = await fetch("http://localhost:3000/api/image", {
+  const imageQuery = useQuery({
+    queryKey: ["image", qrcodeString],
+    queryFn: async () => {
+      const qrCodeDataURL = await QRCode.toDataURL(
+        "http://localhost:3000/qr/" + qrcodeString.qrcode_string
+      );
+      const res = await fetch("http://localhost:3000/api/image", {
         method: "POST",
         body: JSON.stringify({
-          qrstring: qrStringResult,
-          employeeInfo: employee,
+          qrCodeDataURL: qrCodeDataURL,
+          employeeInfo: employeeInfo,
         }),
       });
-      const content = await response.json();
+      if (!res.ok) {
+        throw new Error("Something went wrong");
+      }
+      const imageURL = await res.json();
+      return imageURL;
+    },
+    refetchOnWindowFocus: false,
+    enabled: !!qrcodeString && !!employeeInfo,
+  });
 
-      setCanvasState(content);
-    };
-    fetchQr();
-  }, []);
-
-  if (!canvasState) {
-    return;
+  if (imageQuery.isLoading) {
+    return <>Loading</>;
+  }
+  if (imageQuery.isError) {
+    return <>error</>;
   }
 
-  return (
-    <>
-      <img src={canvasState} />
-    </>
-  );
+  const canvasDataURL = imageQuery.data;
+  const printAndClose = () => {
+    window.print();
+    window.close();
+  };
+
+  return <img src={canvasDataURL} onLoad={printAndClose} />;
 }
 
-export async function getServerSideProps(context) {
-  let string = null;
-  let isError = false;
-  let employee: null | employee = null;
-  const params = context.query;
-  const employeeId = params.employee_id;
-  const eventId = params.event_id;
-  if (employeeId && eventId) {
-    try {
-      employee = await getEmployee(employeeId);
-      const qrResults = await postQr(employeeId, eventId);
-      string = qrResults[0].qrcode_string;
-    } catch (err) {
-      isError = true;
-      console.log(err);
-    }
-  } else {
-    isError = true;
-  }
-
-  return { props: { string, isError, employee } };
+export async function getServerSideProps(context: NextPageContext) {
+  const { eventID, employeeID } = context.query;
+  return { props: { eventID, employeeID } };
 }
-////a

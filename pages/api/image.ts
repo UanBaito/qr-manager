@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   const content = JSON.parse(req.body);
 
-  const qrcode = await loadImage(content.qrstring);
+  const qrcode = await loadImage(content.qrCodeDataURL);
   const logo = await loadImage("public/pajaro1.png");
 
   const employeeInfo: employee = content.employeeInfo;
@@ -23,17 +23,14 @@ export default async function handler(
 
   ctx.translate(300, 0);
   ctx.rotate((Math.PI / 180) * 90);
-
   ctx.fillStyle = "darkblue";
   ctx.fillRect(0, 0, 800, 200);
   ctx.fillStyle = "white";
   ctx.fillRect(450, 20, 200, 160);
   ctx.drawImage(qrcode, 20, 25);
   ctx.drawImage(logo, 475, 25, 150, 150);
-
   ctx.font = "48px Roboto";
   ctx.fillStyle = "white";
   ctx.fillText(capitalizedNames, 200, 100);
-
   res.send(JSON.stringify(canvas.toDataURL()));
 }

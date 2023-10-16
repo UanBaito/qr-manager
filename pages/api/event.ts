@@ -17,7 +17,7 @@ export async function getEvent(eventID?: string, employeeID?: string) {
     ///send all events
     query = "SELECT * FROM events";
   }
-  console.log(query);
+
   const client = await db.connect();
   const results = await client.query(query);
   client.release();

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import db from "../../lib/db";
 import format from "pg-format";
 
-export async function getEmployee(eventID: string, employeeID: string) {
+export async function getEmployee(eventID?: string, employeeID?: string) {
   let query = "";
   if (employeeID) {
     /// send especific employee
@@ -20,6 +20,7 @@ export async function getEmployee(eventID: string, employeeID: string) {
   const client = await db.connect();
   const results = await client.query(query);
   client.release();
+
   return results.rows;
 }
 

@@ -10,7 +10,7 @@ export default function PrintButton({
   return (
     <a
       target="_blank"
-      href={`/qr?employee_id=${employee_id}&event_id=${event_id}`}
+      href={`/qr?employeeID=${employee_id}&eventID=${event_id}`}
     >
       Imprimir
     </a>

@@ -1,40 +1,46 @@
-import { getQrcode } from "../api/getQrcode";
+import { useQuery } from "@tanstack/react-query";
+import { NextPageContext } from "next";
 
-export default function Qrcode({ hasExpired, isError, error }) {
-  if (isError) {
-    console.log(error, isError);
-    return (
-      <>
-        <h1>{error}</h1>
-      </>
-    );
+export default function Qrcode({ qrcode }) {
+  const validateQrQuery = useQuery({
+    queryKey: ["validateQr", qrcode],
+    queryFn: async () => {
+      const res = await fetch(
+        "http://localhost:3000/api/qrcode?qrcode=" + qrcode
+      );
+      if (res.status === 404) {
+        throw new Error("Qrcode does not exist on database");
+      } else if (!res.ok) {
+        throw new Error("Something went wrong");
+      }
+      const result = await res.json();
+      return result;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  if (validateQrQuery.isLoading) {
+    return <>loading</>;
   }
-  if (hasExpired === false) {
+
+  if (validateQrQuery.isError) {
+    if (validateQrQuery.error instanceof Error) {
+      return <>{validateQrQuery.error.message}</>;
+    }
+    return <>Something went wrong</>;
+  }
+
+  const { age } = validateQrQuery.data;
+
+  if (age >= 1) {
     return <>qrcode has expired</>;
-  } else if (hasExpired === true) {
+  } else {
     return <>qrcode is valid</>;
   }
 }
 
-export async function getServerSideProps(context) {
-  let hasExpired = null;
-  let qrcodeResult = null;
-  let isError = false;
-  let error = null;
-  try {
-    const qrcode = context.params.qrcode;
-    qrcodeResult = await getQrcode(qrcode);
-  } catch (err) {
-    qrcodeResult = null;
-    isError = true;
-    error = "there was an error while validating the code";
-  }
-  if (qrcodeResult) {
-    hasExpired = qrcodeResult.age >= 1 ? true : false;
-  } else {
-    isError = true;
-    error = "code does not exist on database";
-  }
-
-  return { props: { hasExpired, isError, error } };
+export async function getServerSideProps(context: NextPageContext) {
+  const qrcode = context.query.qrcode;
+  return { props: { qrcode } };
 }

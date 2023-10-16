@@ -45,7 +45,6 @@ export default function Event({ eventID }) {
 
   const event = eventQuery.data[0];
   const employees = employeesQuery.data;
-  console.log(employees);
 
   // / I do this because I want to modify one of the properties, but dont want to change the original
   // / object in case I may need it later
