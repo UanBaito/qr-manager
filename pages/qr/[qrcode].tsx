@@ -6,7 +6,7 @@ export default function Qrcode({ qrcode }) {
     queryKey: ["validateQr", qrcode],
     queryFn: async () => {
       const res = await fetch(
-        "http://localhost:3000/api/qrcode?qrcode=" + qrcode
+        "https://qr-manager-two.vercel.app/api/qrcode?qrcode=" + qrcode
       );
       if (res.status === 404) {
         throw new Error("Qrcode does not exist on database");

@@ -11,7 +11,7 @@ export default function Event({ eventID }) {
     queryKey: ["event", eventID],
     queryFn: async () => {
       const response = await fetch(
-        "http://localhost:3000/api/event?eventID=" + eventID
+        "https://qr-manager-two.vercel.app/api/event?eventID=" + eventID
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -24,7 +24,7 @@ export default function Event({ eventID }) {
     queryKey: ["employees", eventID],
     queryFn: async () => {
       const response = await fetch(
-        "http://localhost:3000/api/employee?eventID=" + eventID
+        "https://qr-manager-two.vercel.app/api/employee?eventID=" + eventID
       );
       if (!response.ok) {
         throw new Error("Something went wrong");

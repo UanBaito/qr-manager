@@ -16,10 +16,13 @@ export default function CSVUpload({ eventID }: { eventID: string }) {
 
   const employeesMutation = useMutation({
     mutationFn: async (CSVtext: string) => {
-      const res = await fetch("http://localhost:3000/api/employee", {
-        method: "POST",
-        body: JSON.stringify({ CSVtext, eventID }),
-      });
+      const res = await fetch(
+        "https://qr-manager-two.vercel.app/api/employee",
+        {
+          method: "POST",
+          body: JSON.stringify({ CSVtext, eventID }),
+        }
+      );
       if (!res.ok) {
         throw new Error("something went wrong");
       }

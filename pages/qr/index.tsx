@@ -6,7 +6,7 @@ export default function Qr({ eventID, employeeID }) {
   const qrcodeQuery = useQuery({
     queryKey: ["qrcode", employeeID, eventID],
     queryFn: async () => {
-      const res = await fetch("http://localhost:3000/api/qrcode", {
+      const res = await fetch("https://qr-manager-two.vercel.app/api/qrcode", {
         method: "POST",
         body: JSON.stringify({ employeeID: employeeID, eventID: eventID }),
       });
@@ -22,7 +22,8 @@ export default function Qr({ eventID, employeeID }) {
     queryKey: ["employee", employeeID],
     queryFn: async () => {
       const res = await fetch(
-        "http://localhost:3000/api/employee?employeeID=" + employeeID
+        "https://qr-manager-two.vercel.app/api/employee?employeeID=" +
+          employeeID
       );
       if (!res.ok) {
         throw new Error("Something went wrong");
@@ -40,10 +41,10 @@ export default function Qr({ eventID, employeeID }) {
     queryKey: ["image", qrcodeString],
     queryFn: async () => {
       const qrCodeDataURL = await QRCode.toDataURL(
-        "http://localhost:3000/qr/" + qrcodeString.qrcode_string,
+        "https://qr-manager-two.vercel.app/qr/" + qrcodeString.qrcode_string,
         { errorCorrectionLevel: "H" }
       );
-      const res = await fetch("http://localhost:3000/api/image", {
+      const res = await fetch("https://qr-manager-two.vercel.app/api/image", {
         method: "POST",
         body: JSON.stringify({
           qrCodeDataURL: qrCodeDataURL,

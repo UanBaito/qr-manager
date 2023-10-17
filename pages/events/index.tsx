@@ -7,7 +7,9 @@ export default function events() {
   const eventsQuery = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      const response = await fetch("http://localhost:3000/api/event");
+      const response = await fetch(
+        "https://qr-manager-two.vercel.app/api/event"
+      );
       if (!response.ok) {
         throw new Error("Something went wrong");
       }

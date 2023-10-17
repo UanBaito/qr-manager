@@ -10,7 +10,8 @@ export default function Employee({ employeeID }) {
     queryKey: ["employee", employeeID],
     queryFn: async () => {
       const response = await fetch(
-        "http://localhost:3000/api/employee?employeeID=" + employeeID
+        "https://qr-manager-two.vercel.app/api/employee?employeeID=" +
+          employeeID
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -24,7 +25,7 @@ export default function Employee({ employeeID }) {
     queryKey: ["events", employeeID],
     queryFn: async () => {
       const response = await fetch(
-        "http://localhost:3000/api/event?employeeID=" + employeeID
+        "https://qr-manager-two.vercel.app/api/event?employeeID=" + employeeID
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
