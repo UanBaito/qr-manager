@@ -1,10 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import db from "../../lib/db";
 import format from "pg-format";
-import fs from "fs";
+
 import { from as copyFrom } from "pg-copy-streams";
 import { pipeline } from "node:stream/promises";
 import path from "path";
+import fs from "fs";
+import fsAsync from "fs/promises";
 
 export async function getEmployee(eventID?: string, employeeID?: string) {
   let query = "";
@@ -29,7 +31,16 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
 }
 
 export async function postEmployee(text: string, eventID?: string) {
-  fs.writeFileSync(path.join("/temp", "empleados.csv"), text);
+  try {
+    console.log(text);
+    await fsAsync.writeFile(
+      path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv")),
+      text
+    );
+    console.log("file writeddd");
+  } catch (err) {
+    throw err;
+  }
 
   const client = await db.connect();
   await client.query("BEGIN;");
@@ -42,7 +53,9 @@ export async function postEmployee(text: string, eventID?: string) {
       "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
     )
   );
-  const sourceStream = fs.createReadStream(path.join("/temp", "empleados.csv"));
+  const sourceStream = fs.createReadStream(
+    path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
+  );
   await pipeline(sourceStream, ingestStream);
   const idsResults: any = await client.query(
     "INSERT INTO employees SELECT * FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id;"
@@ -92,7 +105,11 @@ export default async function handler(
     /// TODO: fix this part here
     try {
       const { CSVtext, eventID } = JSON.parse(req.body);
-      postEmployee(CSVtext, eventID);
+      console.log(
+        path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
+      );
+
+      ///postEmployee(CSVtext, eventID);
       res.send("Database updated");
     } catch (err) {
       console.log(err);
