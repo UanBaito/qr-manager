@@ -46,7 +46,7 @@ export async function postEmployee(text: string, eventID?: string) {
     )
   );
   const sourceStream = fs.createReadStream(
-    path.join(process.cwd(), "lib", "empleados.csv")
+    path.join(process.cwd(), "temp", "empleados.csv")
   );
   await pipeline(sourceStream, ingestStream);
   const idsResults: any = await client.query(
