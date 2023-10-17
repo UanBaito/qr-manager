@@ -1,5 +1,6 @@
 import { createCanvas, loadImage } from "canvas";
 import { NextApiRequest, NextApiResponse } from "next";
+import path from "path";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,7 +9,7 @@ export default async function handler(
   if (req.method === "POST") {
     const content = JSON.parse(req.body);
     const qrcode = await loadImage(content.qrCodeDataURL);
-    const logo = await loadImage("public/pajaro1.png");
+    const logo = await loadImage(path.join(__dirname, "public/pajaro1.png"));
     const employeeInfo: employee = content.employeeInfo;
     const names = employeeInfo.name.split(" ");
     const capitalizedNamesArray = names.map((name) => {
