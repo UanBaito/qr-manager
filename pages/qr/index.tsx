@@ -44,7 +44,7 @@ export default function Qr({ eventID, employeeID }) {
         "https://qr-manager-two.vercel.app/qr/" + qrcodeString.qrcode_string,
         { errorCorrectionLevel: "H" }
       );
-      const res = await fetch("https://qr-manager-two.vercel.app/api/image", {
+      const res = await fetch("https://qr-manager-two.vercel.app/api/image/", {
         method: "POST",
         body: JSON.stringify({
           qrCodeDataURL: qrCodeDataURL,
