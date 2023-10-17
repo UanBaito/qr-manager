@@ -18,6 +18,6 @@ export default function Employees({ employessList }) {
 }
 
 // export async function getServerSideProps() {
-//   const employessList = await getEmployees();
-//   return { props: { employessList } };
+//   // const employessList = await getEmployees();
+//   // return { props: { employessList } };
 // }

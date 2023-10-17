@@ -1,5 +1,6 @@
 import { createCanvas, loadImage } from "canvas";
 import { NextApiRequest, NextApiResponse } from "next";
+import path from "path";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,7 +10,11 @@ export default async function handler(
 
   const qrcode = await loadImage(content.qrCodeDataURL);
   const logo = await loadImage(
-    "public/png-transparent-musical-theatre-musician-concert-disco-musical-note-album-text-logo.png"
+    path.join(
+      process.cwd(),
+      "public",
+      "png-transparent-musical-theatre-musician-concert-disco-musical-note-album-text-logo.png"
+    )
   );
   const logoWidth = logo.width;
   const logoHeight = logo.height;
