@@ -74,7 +74,7 @@ export default function Event({ eventID }) {
           title="Empleados asignados a este evento"
           viewEndpoint="/employees/"
         />
-        <CSVUpload />
+        <CSVUpload eventID={event.id} />
       </section>
     </Layout>
   );

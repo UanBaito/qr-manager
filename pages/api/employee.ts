@@ -27,9 +27,7 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
   return results.rows;
 }
 
-export async function postEmployee(text: string) {
-  console.log(text);
-
+export async function postEmployee(text: string, eventID?: string) {
   fs.writeFile("lib/empleados.csv", text, (err) => {
     if (err) throw err;
     console.log("file saved");
@@ -47,14 +45,27 @@ export async function postEmployee(text: string) {
     );
     const sourceStream = fs.createReadStream("lib/empleados.csv");
     await pipeline(sourceStream, ingestStream);
-    await client.query(
-      "INSERT INTO employees SELECT * FROM tmp_table ON CONFLICT DO NOTHING;"
+    const idsResults: any = await client.query(
+      "INSERT INTO employees SELECT * FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id;"
     );
+    /// maybe move this to another function
+    const mappedIDs = idsResults.rows.map((result) => [eventID, result.id]);
+    const results = await client.query(
+      format(
+        "INSERT INTO events_employees (event_id, employee_id) VALUES %L ON CONFLICT DO NOTHING",
+        mappedIDs
+      )
+    );
+    console.log(results);
+    console.log();
     await client.query("COMMIT;");
+    console.log(results);
   } finally {
     client.release();
   }
 }
+
+// ON CONFLICT (event_id, employee_id) DO UPDATE SET event_id = excluded.event_id, employee_id = excluded.employee_id RETURNING (event_id, employee_id)
 
 export default async function handler(
   req: NextApiRequest,
@@ -77,7 +88,9 @@ export default async function handler(
   if (req.method === "POST") {
     /// TODO: fix this part here
     try {
-      postEmployee(req.body);
+      const { CSVtext, eventID } = JSON.parse(req.body);
+
+      postEmployee(CSVtext, eventID);
       res.send("Database updated");
     } catch (err) {
       console.log(err);

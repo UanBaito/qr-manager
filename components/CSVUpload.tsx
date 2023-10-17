@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
-export default function CSVUpload() {
+export default function CSVUpload({ eventID }: { eventID: string }) {
   const [file, setFile] = useState<File>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -18,7 +18,7 @@ export default function CSVUpload() {
     mutationFn: async (CSVtext: string) => {
       const res = await fetch("http://localhost:3000/api/employee", {
         method: "POST",
-        body: CSVtext,
+        body: JSON.stringify({ CSVtext, eventID }),
       });
       if (!res.ok) {
         throw new Error("something went wrong");
