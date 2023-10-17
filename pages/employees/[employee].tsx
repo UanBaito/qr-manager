@@ -4,14 +4,14 @@ import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import Table from "../../components/Table";
 import PrintButton from "../../components/PrintButton";
+import { baseUrl } from "../../lib/constants";
 
 export default function Employee({ employeeID }) {
   const employeeQuery = useQuery({
     queryKey: ["employee", employeeID],
     queryFn: async () => {
       const response = await fetch(
-        "https://qr-manager-two.vercel.app/api/employee?employeeID=" +
-          employeeID
+        `${baseUrl}/api/employee?employeeID=${employeeID}`
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -25,7 +25,7 @@ export default function Employee({ employeeID }) {
     queryKey: ["events", employeeID],
     queryFn: async () => {
       const response = await fetch(
-        "https://qr-manager-two.vercel.app/api/event?employeeID=" + employeeID
+        `${baseUrl}/api/event?employeeID=${employeeID}`
       );
       if (!response.ok) {
         throw new Error("Something went wrong");

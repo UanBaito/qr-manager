@@ -1,12 +1,13 @@
 import { NextPageContext } from "next";
 import { useQuery } from "@tanstack/react-query";
 import QRCode from "qrcode";
+import { baseUrl } from "../../lib/constants";
 
 export default function Qr({ eventID, employeeID }) {
   const qrcodeQuery = useQuery({
     queryKey: ["qrcode", employeeID, eventID],
     queryFn: async () => {
-      const res = await fetch("https://qr-manager-two.vercel.app/api/qrcode", {
+      const res = await fetch(`${baseUrl}/api/qrcode`, {
         method: "POST",
         body: JSON.stringify({ employeeID: employeeID, eventID: eventID }),
       });
@@ -22,8 +23,7 @@ export default function Qr({ eventID, employeeID }) {
     queryKey: ["employee", employeeID],
     queryFn: async () => {
       const res = await fetch(
-        "https://qr-manager-two.vercel.app/api/employee?employeeID=" +
-          employeeID
+        `${baseUrl}/api/employee?employeeID=${employeeID}`
       );
       if (!res.ok) {
         throw new Error("Something went wrong");
@@ -41,10 +41,10 @@ export default function Qr({ eventID, employeeID }) {
     queryKey: ["image", qrcodeString],
     queryFn: async () => {
       const qrCodeDataURL = await QRCode.toDataURL(
-        "https://qr-manager-two.vercel.app/qr/" + qrcodeString.qrcode_string,
+        `${baseUrl}/qr/${qrcodeString.qrcode_string}`,
         { errorCorrectionLevel: "H" }
       );
-      const res = await fetch("https://qr-manager-two.vercel.app/api/image/", {
+      const res = await fetch(`${baseUrl}/api/image/`, {
         method: "POST",
         body: JSON.stringify({
           qrCodeDataURL: qrCodeDataURL,

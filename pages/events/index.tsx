@@ -2,14 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import Layout from "../../components/Layout";
 import Table from "../../components/Table";
 import { getEvent } from "../api/event";
+import { baseUrl } from "../../lib/constants";
 
 export default function events() {
   const eventsQuery = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      const response = await fetch(
-        "https://qr-manager-two.vercel.app/api/event"
-      );
+      const response = await fetch(`${baseUrl}/api/event`);
       if (!response.ok) {
         throw new Error("Something went wrong");
       }

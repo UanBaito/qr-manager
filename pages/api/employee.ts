@@ -77,7 +77,6 @@ export default async function handler(
       }
       try {
         const result = await getEmployee(eventID, employeeID);
-
         res.send(result);
       } catch (err) {
         console.log(err);

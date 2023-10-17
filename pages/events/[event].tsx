@@ -5,14 +5,13 @@ import PrintButton from "../../components/PrintButton";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import CSVUpload from "../../components/CSVUpload";
+import { baseUrl } from "../../lib/constants";
 
 export default function Event({ eventID }) {
   const eventQuery = useQuery({
     queryKey: ["event", eventID],
     queryFn: async () => {
-      const response = await fetch(
-        "https://qr-manager-two.vercel.app/api/event?eventID=" + eventID
-      );
+      const response = await fetch(`${baseUrl}/api/event?eventID=${eventID}`);
       if (!response.ok) {
         throw new Error("Something went wrong");
       } else {
@@ -24,7 +23,7 @@ export default function Event({ eventID }) {
     queryKey: ["employees", eventID],
     queryFn: async () => {
       const response = await fetch(
-        "https://qr-manager-two.vercel.app/api/employee?eventID=" + eventID
+        `${baseUrl}/api/employee?eventID=${eventID}`
       );
       if (!response.ok) {
         throw new Error("Something went wrong");

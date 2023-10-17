@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { NextPageContext } from "next";
+import { baseUrl } from "../../lib/constants";
 
 export default function Qrcode({ qrcode }) {
   const validateQrQuery = useQuery({
     queryKey: ["validateQr", qrcode],
     queryFn: async () => {
-      const res = await fetch(
-        "https://qr-manager-two.vercel.app/api/qrcode?qrcode=" + qrcode
-      );
+      const res = await fetch(`${baseUrl}/api/qrcode?qrcode=${qrcode}`);
       if (res.status === 404) {
         throw new Error("Qrcode does not exist on database");
       } else if (!res.ok) {

@@ -1,5 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import "dotenv/config";
+import { baseUrl } from "../lib/constants";
 
 export default function CSVUpload({ eventID }: { eventID: string }) {
   const [file, setFile] = useState<File>(null);
@@ -16,13 +18,10 @@ export default function CSVUpload({ eventID }: { eventID: string }) {
 
   const employeesMutation = useMutation({
     mutationFn: async (CSVtext: string) => {
-      const res = await fetch(
-        "https://qr-manager-two.vercel.app/api/employee",
-        {
-          method: "POST",
-          body: JSON.stringify({ CSVtext, eventID }),
-        }
-      );
+      const res = await fetch(`${baseUrl}/api/employee`, {
+        method: "POST",
+        body: JSON.stringify({ CSVtext, eventID }),
+      });
       if (!res.ok) {
         throw new Error("something went wrong");
       }
