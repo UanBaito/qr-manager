@@ -1,7 +1,4 @@
-import Table from "../../components/Table";
 import Layout from "../../components/Layout";
-
-import ViewData from "../../components/ViewData";
 
 export default function Employees({ employessList }) {
   return (

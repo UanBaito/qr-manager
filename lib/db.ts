@@ -3,7 +3,7 @@ import "dotenv/config";
 
 let url = null;
 
-if (process.env.ENVIRONMENT === "PRODUCTION") {
+if (process.env.NODE_ENV === "production") {
   url = process.env.PGURL;
 }
 
