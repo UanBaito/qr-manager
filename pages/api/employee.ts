@@ -29,7 +29,7 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
 }
 
 export async function postEmployee(text: string, eventID?: string) {
-  fs.writeFile("lib/empleados.csv", text, (err) => {
+  fs.writeFile((process.cwd(), "temp", "empleados.csv"), text, (err) => {
     if (err) throw err;
     console.log("file saved");
   });
@@ -39,6 +39,7 @@ export async function postEmployee(text: string, eventID?: string) {
   await client.query(
     "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS) ON COMMIT DROP;"
   );
+
   const ingestStream = client.query(
     copyFrom(
       "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
