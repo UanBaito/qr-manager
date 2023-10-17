@@ -30,3 +30,4 @@ yarn-error.log*
 .env.production.local
 pages/api/getEmployeesFromEvent.ts
 .env
+empleados.csv
