@@ -29,12 +29,9 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
 }
 
 export async function postEmployee(text: string, eventID?: string) {
-  fs.writeFile(path.join("/temp", "empleados.csv"), text, (err) => {
-    if (err) throw err;
-    console.log("file saved");
-  });
-  const client = await db.connect();
+  fs.writeFileSync(path.join("/temp", "empleados.csv"), text);
 
+  const client = await db.connect();
   await client.query("BEGIN;");
   await client.query(
     "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS) ON COMMIT DROP;"
