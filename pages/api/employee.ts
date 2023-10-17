@@ -33,10 +33,7 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
 export async function postEmployee(text: string, eventID?: string) {
   try {
     console.log(text);
-    await fsAsync.writeFile(
-      path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv")),
-      text
-    );
+    await fsAsync.writeFile(path.join("/tmp", "empleados.csv"), text);
     console.log("file writeddd");
   } catch (err) {
     throw err;
@@ -53,9 +50,7 @@ export async function postEmployee(text: string, eventID?: string) {
       "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
     )
   );
-  const sourceStream = fs.createReadStream(
-    path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
-  );
+  const sourceStream = fs.createReadStream(path.join("/tmp", "empleados.csv"));
   await pipeline(sourceStream, ingestStream);
   const idsResults: any = await client.query(
     "INSERT INTO employees SELECT * FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id;"
