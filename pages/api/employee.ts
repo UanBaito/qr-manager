@@ -109,7 +109,7 @@ export default async function handler(
         path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
       );
 
-      ///postEmployee(CSVtext, eventID);
+      postEmployee(CSVtext, eventID);
       res.send("Database updated");
     } catch (err) {
       console.log(err);
