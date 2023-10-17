@@ -8,7 +8,11 @@ export default async function handler(
   const content = JSON.parse(req.body);
 
   const qrcode = await loadImage(content.qrCodeDataURL);
-  const logo = await loadImage("public/pajaro1.png");
+  const logo = await loadImage(
+    "public/png-transparent-musical-theatre-musician-concert-disco-musical-note-album-text-logo.png"
+  );
+  const logoWidth = logo.width;
+  const logoHeight = logo.height;
 
   const employeeInfo: employee = content.employeeInfo;
 
@@ -28,10 +32,16 @@ export default async function handler(
   ctx.fillStyle = "white";
   ctx.fillRect(250, 0, 64.251968504, 64.251968504);
   ctx.drawImage(qrcode, 0, 0, 64.251968504, 64.251968504);
-  ctx.drawImage(logo, 250, 0, 64.251968504, 64.251968504);
+  ctx.drawImage(
+    logo,
+    250,
+    0,
+    logoWidth * (64.251968504 / logoHeight),
+    64.251968504
+  );
   ctx.font = "16px Ubuntu";
   ctx.fillStyle = "white";
-  ctx.fillText(capitalizedNames, 125, 36.251968504);
+  ctx.fillText(capitalizedNames, 75, 36.251968504);
 
   res.send(JSON.stringify(canvas.toDataURL()));
 }
