@@ -29,10 +29,14 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
 }
 
 export async function postEmployee(text: string, eventID?: string) {
-  fs.writeFile((process.cwd(), "temp", "empleados.csv"), text, (err) => {
-    if (err) throw err;
-    console.log("file saved");
-  });
+  fs.writeFile(
+    path.join(process.cwd(), "temp", "empleados.csv"),
+    text,
+    (err) => {
+      if (err) throw err;
+      console.log("file saved");
+    }
+  );
   const client = await db.connect();
 
   await client.query("BEGIN;");
