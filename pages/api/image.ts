@@ -9,7 +9,7 @@ export default async function handler(
   if (req.method === "POST") {
     const content = JSON.parse(req.body);
     const qrcode = await loadImage(content.qrCodeDataURL);
-    const logo = await loadImage(path.join(__dirname, "public/pajaro1.png"));
+    const logo = await loadImage(path.resolve("../../public/pajaro1.png"));
     const employeeInfo: employee = content.employeeInfo;
     const names = employeeInfo.name.split(" ");
     const capitalizedNamesArray = names.map((name) => {
