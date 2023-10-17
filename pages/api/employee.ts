@@ -34,38 +34,37 @@ export async function postEmployee(text: string, eventID?: string) {
     console.log("file saved");
   });
   const client = await db.connect();
-  try {
-    await client.query("BEGIN;");
-    await client.query(
-      "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS) ON COMMIT DROP;"
-    );
-    const ingestStream = client.query(
-      copyFrom(
-        "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
-      )
-    );
-    const sourceStream = fs.createReadStream(
-      path.join(process.cwd(), "lib", "empleados.csv")
-    );
-    await pipeline(sourceStream, ingestStream);
-    const idsResults: any = await client.query(
-      "INSERT INTO employees SELECT * FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id;"
-    );
-    /// maybe move this to another function
-    const mappedIDs = idsResults.rows.map((result) => [eventID, result.id]);
-    const results = await client.query(
-      format(
-        "INSERT INTO events_employees (event_id, employee_id) VALUES %L ON CONFLICT DO NOTHING",
-        mappedIDs
-      )
-    );
-    console.log(results);
-    console.log();
-    await client.query("COMMIT;");
-    console.log(results);
-  } finally {
-    client.release();
-  }
+
+  await client.query("BEGIN;");
+  await client.query(
+    "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS) ON COMMIT DROP;"
+  );
+  const ingestStream = client.query(
+    copyFrom(
+      "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
+    )
+  );
+  const sourceStream = fs.createReadStream(
+    path.join(process.cwd(), "lib", "empleados.csv")
+  );
+  await pipeline(sourceStream, ingestStream);
+  const idsResults: any = await client.query(
+    "INSERT INTO employees SELECT * FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id;"
+  );
+  /// maybe move this to another function
+  const mappedIDs = idsResults.rows.map((result) => [eventID, result.id]);
+  const results = await client.query(
+    format(
+      "INSERT INTO events_employees (event_id, employee_id) VALUES %L ON CONFLICT DO NOTHING",
+      mappedIDs
+    )
+  );
+  console.log(results);
+  console.log();
+  await client.query("COMMIT;");
+  console.log(results);
+
+  client.release();
 }
 
 // ON CONFLICT (event_id, employee_id) DO UPDATE SET event_id = excluded.event_id, employee_id = excluded.employee_id RETURNING (event_id, employee_id)
@@ -80,8 +79,14 @@ export default async function handler(
       if (eventID && employeeID) {
         res.status(400).send("API route only works with one ID at a time");
       }
-      const result = await getEmployee(eventID, employeeID);
-      res.send(result);
+      try {
+        const result = await getEmployee(eventID, employeeID);
+
+        res.send(result);
+      } catch (err) {
+        console.log(err);
+        res.status(500).send("something went wrong");
+      }
     } else {
       res
         .status(400)
@@ -92,7 +97,6 @@ export default async function handler(
     /// TODO: fix this part here
     try {
       const { CSVtext, eventID } = JSON.parse(req.body);
-
       postEmployee(CSVtext, eventID);
       res.send("Database updated");
     } catch (err) {
