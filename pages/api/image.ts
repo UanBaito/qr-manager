@@ -10,7 +10,9 @@ export default async function handler(
     const url = process.env.VERCEL_URL;
     const content = JSON.parse(req.body);
     const qrcode = await loadImage(content.qrCodeDataURL);
-    const logo = await loadImage(process.cwd() + "public", " pajaro1.png");
+    const logo = await loadImage(
+      path.join(process.cwd(), "public", "pajaro1.png")
+    );
     const employeeInfo: employee = content.employeeInfo;
     const names = employeeInfo.name.split(" ");
     const capitalizedNamesArray = names.map((name) => {
