@@ -7,21 +7,16 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     const content = JSON.parse(req.body);
-
     const qrcode = await loadImage(content.qrCodeDataURL);
     const logo = await loadImage("public/pajaro1.png");
-
     const employeeInfo: employee = content.employeeInfo;
-
     const names = employeeInfo.name.split(" ");
     const capitalizedNamesArray = names.map((name) => {
       return name.charAt(0).toUpperCase() + name.substring(1);
     });
     const capitalizedNames = capitalizedNamesArray.join(" ");
-
     const canvas = createCanvas(529.13385827, 64.251968504);
     const ctx = canvas.getContext("2d");
-
     // ctx.translate(300, 0);
     // ctx.rotate((Math.PI / 180) * 90);
     ctx.fillStyle = "darkblue";
@@ -33,7 +28,8 @@ export default async function handler(
     ctx.font = "16px Ubuntu";
     ctx.fillStyle = "white";
     ctx.fillText(capitalizedNames, 125, 36.251968504);
-
     res.send(JSON.stringify(canvas.toDataURL()));
+  } else {
+    res.status(400).send("method not allowed");
   }
 }
