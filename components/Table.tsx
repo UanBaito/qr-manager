@@ -28,6 +28,8 @@ export default function Table({
       } else if (column === "created_at") {
       } else if (column === "cedula") {
         columns.push("Cédula");
+      } else if (column === "permission") {
+        columns.push("Acceso");
       } else {
         columns.push(column);
       }

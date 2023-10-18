@@ -33,15 +33,30 @@ export default function Qr({ eventID, employeeID }) {
     },
     refetchOnWindowFocus: false,
   });
+  const eventEmployeeQuery = useQuery({
+    queryKey: ["eventEmployeeQuery", employeeID, eventID],
+    queryFn: async () => {
+      const res = await fetch(
+        `${baseUrl}/api/employees_events?eventID=${eventID}&employeeID=${employeeID}`
+      );
+      if (!res.ok) {
+        throw new Error("Something went wrong");
+      }
+      const relationInfo = await res.json();
+      return relationInfo;
+    },
+    refetchOnWindowFocus: false,
+  });
 
   const qrcodeString = qrcodeQuery.data;
   const employeeInfo = employeeQuery.data;
+  const relationInfo = eventEmployeeQuery.data;
 
   const imageQuery = useQuery({
     queryKey: ["image", qrcodeString],
     queryFn: async () => {
       const qrCodeDataURL = await QRCode.toDataURL(
-        `${baseUrl}/qr/${qrcodeString.qrcode_string}`,
+        `${qrcodeString.qrcode_string}`,
         { errorCorrectionLevel: "H" }
       );
       const res = await fetch(`${baseUrl}/api/image/`, {
@@ -49,6 +64,7 @@ export default function Qr({ eventID, employeeID }) {
         body: JSON.stringify({
           qrCodeDataURL: qrCodeDataURL,
           employeeInfo: employeeInfo,
+          relationInfo: relationInfo,
         }),
       });
       if (!res.ok) {
@@ -58,7 +74,7 @@ export default function Qr({ eventID, employeeID }) {
       return imageURL;
     },
     refetchOnWindowFocus: false,
-    enabled: !!qrcodeString && !!employeeInfo,
+    enabled: !!qrcodeString && !!employeeInfo && !!relationInfo,
   });
 
   if (imageQuery.isLoading) {
