@@ -66,7 +66,7 @@ export async function postEmployee(text: string, eventID?: string) {
 
   const results = await client.query(
     format(
-      "INSERT INTO events_employees (event_id, employee_id, permission) VALUES %L ON CONFLICT DO NOTHING",
+      "INSERT INTO events_employees(event_id, employee_id, permission) VALUES %L ON CONFLICT (event_id, employee_id) DO UPDATE set permission = excluded.permission",
       mappedEventsEmployeesValues
     )
   );
