@@ -16,7 +16,7 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
   } else if (eventID) {
     /// send employees from events
     query = format(
-      "SELECT employees.id, employees.name, employees.cedula, events_employees.has_printed_qr FROM employees, events_employees WHERE events_employees.event_id = '%s' AND events_employees.employee_id = employees.id ORDER BY name DESC",
+      "SELECT employees.id, employees.name, employees.cedula, events_employees.has_printed_qr, events_employees.permission FROM employees, events_employees WHERE events_employees.event_id = '%s' AND events_employees.employee_id = employees.id ORDER BY name DESC",
       eventID
     );
   } else {
@@ -32,12 +32,10 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
 
 export async function postEmployee(text: string, eventID?: string) {
   try {
-    console.log(text);
     await fsAsync.writeFile(
       path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv")),
       text
     );
-    console.log("file writeddd");
   } catch (err) {
     throw err;
   }
@@ -45,7 +43,7 @@ export async function postEmployee(text: string, eventID?: string) {
   const client = await db.connect();
   await client.query("BEGIN;");
   await client.query(
-    "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS) ON COMMIT DROP;"
+    "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS, permission text) ON COMMIT DROP;"
   );
 
   const ingestStream = client.query(
@@ -53,26 +51,32 @@ export async function postEmployee(text: string, eventID?: string) {
       "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
     )
   );
+
   const sourceStream = fs.createReadStream(
     path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
   );
+
   await pipeline(sourceStream, ingestStream);
-  const idsResults: any = await client.query(
-    "INSERT INTO employees SELECT * FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id;"
+
+  const idsResults = await client.query(
+    "INSERT INTO employees(id, name, email, cedula, company) SELECT id, name, email, cedula, company FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
   );
+
+  const mappedEventsEmployeesValues = idsResults.rows.map((v) => [
+    eventID,
+    v.id,
+    v.permission,
+  ]);
   /// maybe move this to another function
-  const mappedIDs = idsResults.rows.map((result) => [eventID, result.id]);
+
   const results = await client.query(
     format(
-      "INSERT INTO events_employees (event_id, employee_id) VALUES %L ON CONFLICT DO NOTHING",
-      mappedIDs
+      "INSERT INTO events_employees (event_id, employee_id, permission) VALUES %L ON CONFLICT DO NOTHING",
+      mappedEventsEmployeesValues
     )
   );
   console.log(results);
-  console.log();
   await client.query("COMMIT;");
-  console.log(results);
-
   client.release();
 }
 
@@ -105,10 +109,6 @@ export default async function handler(
     /// TODO: fix this part here
     try {
       const { CSVtext, eventID } = JSON.parse(req.body);
-      console.log(
-        path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
-      );
-
       postEmployee(CSVtext, eventID);
       res.send("Database updated");
     } catch (err) {

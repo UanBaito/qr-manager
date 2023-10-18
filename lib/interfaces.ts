@@ -4,7 +4,7 @@ type employee = {
   email: string;
   company: string;
   permission: string;
-  cedula: number;
+  cedula: string;
   print?: React.ReactNode;
   has_printed_qr?: boolean | string;
 };
