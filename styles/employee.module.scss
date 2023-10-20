@@ -1,0 +1,36 @@
+.container {
+  text-align: center;
+}
+.info {
+  display: flex;
+  justify-content: center;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    margin: 0.6rem 0 2rem;
+    width: 20rem;
+    border: 1px solid $primary-700;
+    border-radius: 10px;
+    box-shadow: $primary-700 0 0 10px 1px;
+    background-color: $background-200;
+    li {
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      h2 {
+        margin: 0;
+        font-size: 1rem;
+        color: $text-300;
+      }
+    }
+  }
+}
+
+.capitalize {
+  text-transform: capitalize;
+}

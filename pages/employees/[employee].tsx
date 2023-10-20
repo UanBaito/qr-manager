@@ -1,8 +1,8 @@
 import Layout from "../../components/Layout";
-import styles from "../../styles/employess.module.scss";
+import styles from "../../styles/employee.module.scss";
 import { useQuery } from "@tanstack/react-query";
 import PrintButton from "../../components/PrintButton";
-import { baseUrl } from "../../lib/constants";
+import { baseUrl, formatCedula } from "../../lib/constants";
 import EmployeeTable from "../../components/EmployeeTable";
 
 export default function Employee({ employeeID }) {
@@ -42,23 +42,24 @@ export default function Employee({ employeeID }) {
     return <>error</>;
   }
 
-  const employee = employeeQuery.data[0];
-  const events = eventsQuery.data;
+  const employee: employee = employeeQuery.data[0];
+  const events: event[] = eventsQuery.data;
 
   events.forEach((event: event) => {
     event.print = <PrintButton employee_id={employee.id} event_id={event.id} />;
     event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
   });
 
+  const formattedCedula = formatCedula(employee.cedula);
+
   return (
     <Layout>
       <section className={styles.container}>
-        <h1>Empleado</h1>
         <div className={styles.info}>
           <ul>
             <li>
               <h2>Nombre: </h2>
-              <span>{employee.name}</span>
+              <span className={styles.capitalize}>{employee.name}</span>
             </li>
             <li>
               <h2>Email: </h2>
@@ -66,11 +67,11 @@ export default function Employee({ employeeID }) {
             </li>
             <li>
               <h2>Cedula: </h2>
-              <span>{employee.cedula}</span>
+              <span>{formattedCedula}</span>
             </li>
             <li>
               <h2>Compañia: </h2>
-              <span>{employee.company}</span>
+              <span className={styles.capitalize}>{employee.company}</span>
             </li>
           </ul>
         </div>
