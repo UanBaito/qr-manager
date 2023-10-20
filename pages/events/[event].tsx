@@ -1,5 +1,5 @@
 import Layout from "../../components/Layout";
-import Table from "../../components/Table";
+import Table from "../../components/EventTable";
 import styles from "../../styles/event.module.scss";
 import PrintButton from "../../components/PrintButton";
 import { useQuery } from "@tanstack/react-query";
@@ -57,27 +57,8 @@ export default function Event({ eventID }) {
     );
   }
 
-  function formatCedula(cedula: string) {
-    const firstThreeDigits = cedula.substring(0, 3);
-    const middleThreeDigits = cedula.substring(3, 6);
-    const middleFourDigits = cedula.substring(6, 10);
-    const lastDigit = cedula.charAt(10);
-    return `${firstThreeDigits}-${middleThreeDigits}-${middleFourDigits}-${lastDigit}`;
-  }
   const event: event = eventQuery.data[0];
   const employees: employee[] = employeesQuery.data;
-
-  // / I do this because I want to modify one of the properties, but dont want to change the original
-  // / object in case I may need it later
-  const EmployeesArrayCopy = [...employees];
-  EmployeesArrayCopy.forEach((employee: employee) => {
-    employee.cedula = formatCedula(employee.cedula);
-    employee.print = (
-      <PrintButton employee_id={employee.id} event_id={event.id} />
-    );
-
-    employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
-  });
 
   return (
     <Layout>
@@ -86,7 +67,11 @@ export default function Event({ eventID }) {
         <img src="/music_logo.png" alt="Event logo"></img>
         <div ref={messageDivRef} className={styles.message}></div>
         <div className={styles.table_container}>
-          <Table data={EmployeesArrayCopy} viewEndpoint="/employees/" />
+          <Table
+            employees={employees}
+            viewEndpoint="/employees/"
+            event={event}
+          />
           {employees.length === 0 ? <EmployeesNotFound /> : null}
           <CSVUpload eventID={event.id} messageDivRef={messageDivRef} />
         </div>

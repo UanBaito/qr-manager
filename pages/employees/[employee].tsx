@@ -1,10 +1,9 @@
 import Layout from "../../components/Layout";
 import styles from "../../styles/employess.module.scss";
-import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import Table from "../../components/Table";
 import PrintButton from "../../components/PrintButton";
 import { baseUrl } from "../../lib/constants";
+import EmployeeTable from "../../components/EmployeeTable";
 
 export default function Employee({ employeeID }) {
   const employeeQuery = useQuery({
@@ -49,8 +48,7 @@ export default function Employee({ employeeID }) {
   // / I do this because I want to modify one of the properties, but dont want to change the original
   // / object in case I may need it later
 
-  const eventsArrayCopy = [...events];
-  eventsArrayCopy.forEach((event: event) => {
+  events.forEach((event: event) => {
     event.print = <PrintButton employee_id={employee.id} event_id={event.id} />;
     event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
   });
@@ -83,9 +81,9 @@ export default function Employee({ employeeID }) {
             </li>
           </ul>
         </div>
-        <Table
-          data={eventsArrayCopy}
-          title="Entrada permitida a los eventos:"
+        <EmployeeTable
+          events={events}
+          employee={employee}
           viewEndpoint="/events/"
         />
       </section>
