@@ -67,11 +67,7 @@ export default function Event({ eventID }) {
         <img src="/music_logo.png" alt="Event logo"></img>
         <div ref={messageDivRef} className={styles.message}></div>
         <div className={styles.table_container}>
-          <Table
-            employees={employees}
-            viewEndpoint="/employees/"
-            event={event}
-          />
+          <Table employees={employees} event={event} />
           {employees.length === 0 ? <EmployeesNotFound /> : null}
           <CSVUpload eventID={event.id} messageDivRef={messageDivRef} />
         </div>

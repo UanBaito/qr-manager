@@ -45,9 +45,6 @@ export default function Employee({ employeeID }) {
   const employee = employeeQuery.data[0];
   const events = eventsQuery.data;
 
-  // / I do this because I want to modify one of the properties, but dont want to change the original
-  // / object in case I may need it later
-
   events.forEach((event: event) => {
     event.print = <PrintButton employee_id={employee.id} event_id={event.id} />;
     event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
@@ -75,17 +72,9 @@ export default function Employee({ employeeID }) {
               <h2>Compañia: </h2>
               <span>{employee.company}</span>
             </li>
-            <li>
-              <h2>Permisos: </h2>
-              <span>{employee.permission}</span>
-            </li>
           </ul>
         </div>
-        <EmployeeTable
-          events={events}
-          employee={employee}
-          viewEndpoint="/events/"
-        />
+        <EmployeeTable events={events} employee={employee} />
       </section>
     </Layout>
   );

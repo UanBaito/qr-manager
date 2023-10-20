@@ -5,11 +5,9 @@ import { FaEye } from "react-icons/fa6";
 
 export default function EmployeeTable({
   events,
-  viewEndpoint,
   employee,
 }: {
   employee: employee;
-  viewEndpoint: string;
   events: event[];
 }) {
   events.forEach((event: event) => {
@@ -20,13 +18,7 @@ export default function EmployeeTable({
   });
 
   const eventRow = events.map((eventRow) => {
-    return (
-      <EventTableRow
-        eventRow={eventRow}
-        key={eventRow.id}
-        viewEndpoint={viewEndpoint}
-      />
-    );
+    return <EventTableRow eventRow={eventRow} key={eventRow.id} />;
   });
 
   return (
@@ -37,7 +29,7 @@ export default function EmployeeTable({
       <table>
         <thead>
           <tr>
-            <th>Nombre</th>
+            <th>Evento</th>
             <th>¿Ha imprimido el código QR?</th>
           </tr>
         </thead>
@@ -47,13 +39,7 @@ export default function EmployeeTable({
   );
 }
 
-export function EventTableRow({
-  eventRow,
-  viewEndpoint,
-}: {
-  eventRow: event;
-  viewEndpoint: string;
-}) {
+export function EventTableRow({ eventRow }: { eventRow: event }) {
   const cells = [];
   for (const column in eventRow) {
     if (column === "id") {
@@ -69,7 +55,7 @@ export function EventTableRow({
     <tr>
       {mappedCells}
       <td>
-        <Link href={viewEndpoint + eventRow.id}>
+        <Link href={`/events/${eventRow.id}`}>
           <FaEye size={22} />
         </Link>
       </td>

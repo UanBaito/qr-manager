@@ -6,11 +6,9 @@ import { formatCedula } from "../lib/constants";
 
 export default function EventTable({
   employees,
-  viewEndpoint,
   event,
 }: {
   employees: employee[];
-  viewEndpoint: string;
   event: event;
 }) {
   employees.forEach((employee: employee) => {
@@ -23,13 +21,7 @@ export default function EventTable({
   });
 
   const employeeRow = employees.map((employeeRow) => {
-    return (
-      <EventTableRow
-        employeeRow={employeeRow}
-        key={employeeRow.id}
-        viewEndpoint={viewEndpoint}
-      />
-    );
+    return <EventTableRow employeeRow={employeeRow} key={employeeRow.id} />;
   });
 
   return (
@@ -52,16 +44,10 @@ export default function EventTable({
   );
 }
 
-export function EventTableRow({
-  employeeRow,
-  viewEndpoint,
-}: {
-  employeeRow: employee;
-  viewEndpoint: string;
-}) {
+export function EventTableRow({ employeeRow }: { employeeRow: employee }) {
   const cells = [];
   for (const column in employeeRow) {
-    if (column === "id" || column === "created_at") {
+    if (column === "id") {
     } else {
       cells.push(employeeRow[column]);
     }
@@ -74,7 +60,7 @@ export function EventTableRow({
     <tr>
       {mappedCells}
       <td>
-        <Link href={viewEndpoint + employeeRow.id}>
+        <Link href={`/employees/${employeeRow.id}`}>
           <FaEye size={22} />
         </Link>
       </td>
