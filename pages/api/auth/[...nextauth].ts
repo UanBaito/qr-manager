@@ -22,13 +22,13 @@ export default NextAuth({
         if (!credentials) {
           return null;
         }
+        const client = await db.connect();
         try {
-          const client = await db.connect();
           const userResult = await client.query(
             "SELECT * FROM users WHERE username = $1",
             [credentials.username]
           );
-          client.release();
+
           const user: user = userResult.rows[0];
 
           if (!user) {
@@ -48,6 +48,8 @@ export default NextAuth({
         } catch (err) {
           console.log(err);
           return null;
+        } finally {
+          client.release();
         }
       },
     }),

@@ -4,11 +4,15 @@ import db from "../../lib/db";
 async function getRelation(eventID: string, employeeID: string) {
   console.log(eventID, employeeID);
   const client = await db.connect();
-  const relationResults = await client.query(
-    "SELECT permission FROM events_employees WHERE event_id = $1 AND employee_id = $2",
-    [eventID, employeeID]
-  );
-  return relationResults.rows;
+  try {
+    const relationResults = await client.query(
+      "SELECT permission FROM events_employees WHERE event_id = $1 AND employee_id = $2",
+      [eventID, employeeID]
+    );
+    return relationResults.rows;
+  } finally {
+    client.release();
+  }
 }
 
 export default async function handler(

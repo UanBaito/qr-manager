@@ -1,0 +1,46 @@
+.container {
+  position: relative;
+  min-height: 220px;
+  max-width: 400px;
+  margin: auto;
+  border: 1px solid $primary-700;
+  box-shadow: $primary-700 0 0 5px 1px;
+  background-color: $background-200;
+  border-radius: 10px;
+  transition: border ease 0.5s, box-shadow ease 0.5s;
+  h1,
+  img {
+    animation: fade-in ease-in 0.1s;
+  }
+}
+.placeholder {
+  @extend .container;
+  animation: placeholder ease-in-out 2.5s infinite;
+}
+
+.error {
+  @extend .container;
+  border: 1px solid $error-500;
+  box-shadow: $error-500 0 0 5px 1px;
+}
+
+@keyframes placeholder {
+  0% {
+    background-color: $background-200;
+  }
+  50% {
+    background-color: $primary-300;
+  }
+  100% {
+    background-color: $background-200;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0%;
+  }
+  100% {
+    opacity: 100%;
+  }
+}

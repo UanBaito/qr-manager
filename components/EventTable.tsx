@@ -5,13 +5,14 @@ import PrintButton from "./PrintButton";
 import { baseUrl, formatCedula } from "../lib/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode } from "react";
+import BeatLoader from "react-spinners/BeatLoader";
 
-export default function EventTable({ event }: { event: event }) {
+export default function EventTable({ eventID }: { eventID: string }) {
   const employeesQuery = useQuery({
-    queryKey: ["employees", event.id],
+    queryKey: ["employees", eventID],
     queryFn: async () => {
       const response = await fetch(
-        `${baseUrl}/api/employee?eventID=${event.id}`
+        `${baseUrl}/api/employee?eventID=${eventID}`
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -29,7 +30,7 @@ export default function EventTable({ event }: { event: event }) {
     employees.forEach((employee: employee) => {
       employee.cedula = formatCedula(employee.cedula);
       employee.print = (
-        <PrintButton employee_id={employee.id} event_id={event.id} />
+        <PrintButton employee_id={employee.id} event_id={eventID} />
       );
 
       employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
@@ -61,9 +62,7 @@ export default function EventTable({ event }: { event: event }) {
         </tbody>
       </table>
       {employeesQuery.isLoading ? (
-        <>loading</>
-      ) : employeesQuery.isError ? (
-        <>error</>
+        <BeatLoader className={styles.icon} color="#6784c0" />
       ) : null}
     </div>
   );

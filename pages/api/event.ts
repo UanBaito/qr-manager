@@ -19,9 +19,12 @@ export async function getEvent(eventID?: string, employeeID?: string) {
   }
 
   const client = await db.connect();
-  const results = await client.query(query);
-  client.release();
-  return results.rows;
+  try {
+    const results = await client.query(query);
+    return results.rows;
+  } finally {
+    client.release();
+  }
 }
 
 export default async function handler(

@@ -5,13 +5,14 @@ import { FaEye } from "react-icons/fa6";
 import { useQuery } from "@tanstack/react-query";
 import { baseUrl } from "../lib/constants";
 import { ReactNode } from "react";
+import BeatLoader from "react-spinners/BeatLoader";
 
-export default function EmployeeTable({ employee }: { employee: employee }) {
+export default function EmployeeTable({ employeeID }: { employeeID: string }) {
   const eventsQuery = useQuery({
-    queryKey: ["events", employee.id],
+    queryKey: ["events", employeeID],
     queryFn: async () => {
       const response = await fetch(
-        `${baseUrl}/api/event?employeeID=${employee.id}`
+        `${baseUrl}/api/event?employeeID=${employeeID}`
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -28,7 +29,7 @@ export default function EmployeeTable({ employee }: { employee: employee }) {
 
     events.forEach((event: event) => {
       event.print = (
-        <PrintButton employee_id={employee.id} event_id={event.id} />
+        <PrintButton employee_id={employeeID} event_id={event.id} />
       );
       event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
     });
@@ -57,9 +58,7 @@ export default function EmployeeTable({ employee }: { employee: employee }) {
         </tbody>
       </table>
       {eventsQuery.isLoading ? (
-        <>loading</>
-      ) : eventsQuery.isError ? (
-        <>error</>
+        <BeatLoader className={styles.icon} color="#6784c0" />
       ) : null}
     </div>
   );

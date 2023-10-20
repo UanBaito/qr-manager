@@ -24,10 +24,12 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
     query = "SELECT * FROM employees";
   }
   const client = await db.connect();
-  const results = await client.query(query);
-  client.release();
-
-  return results.rows;
+  try {
+    const results = await client.query(query);
+    return results.rows;
+  } finally {
+    client.release();
+  }
 }
 
 export async function postEmployee(text: string, eventID?: string) {
@@ -39,47 +41,46 @@ export async function postEmployee(text: string, eventID?: string) {
   } catch (err) {
     throw err;
   }
-
   const client = await db.connect();
+  try {
+    await client.query("BEGIN;");
+    await client.query(
+      "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS, permission text) ON COMMIT DROP;"
+    );
 
-  await client.query("BEGIN;");
-  await client.query(
-    "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS, permission text) ON COMMIT DROP;"
-  );
+    const ingestStream = client.query(
+      copyFrom(
+        "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
+      )
+    );
 
-  const ingestStream = client.query(
-    copyFrom(
-      "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
-    )
-  );
+    const sourceStream = fs.createReadStream(
+      path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
+    );
 
-  const sourceStream = fs.createReadStream(
-    path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
-  );
+    await pipeline(sourceStream, ingestStream);
 
-  await pipeline(sourceStream, ingestStream);
+    const idsResults = await client.query(
+      "INSERT INTO employees(id, name, email, cedula, company) SELECT id, name, email, cedula, company FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
+    );
 
-  const idsResults = await client.query(
-    "INSERT INTO employees(id, name, email, cedula, company) SELECT id, name, email, cedula, company FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
-  );
+    const mappedEventsEmployeesValues = idsResults.rows.map((v) => [
+      eventID,
+      v.id,
+      v.permission,
+    ]);
+    /// maybe move this to another function
 
-  const mappedEventsEmployeesValues = idsResults.rows.map((v) => [
-    eventID,
-    v.id,
-    v.permission,
-  ]);
-  /// maybe move this to another function
-
-  const results = await client.query(
-    format(
-      "INSERT INTO events_employees (event_id, employee_id, permission) VALUES %L ON CONFLICT DO NOTHING",
-      mappedEventsEmployeesValues
-    )
-  );
-  console.log(results);
-  await client.query("COMMIT;");
-
-  client.release();
+    await client.query(
+      format(
+        "INSERT INTO events_employees (event_id, employee_id, permission) VALUES %L ON CONFLICT DO NOTHING",
+        mappedEventsEmployeesValues
+      )
+    );
+    await client.query("COMMIT;");
+  } finally {
+    client.release();
+  }
 }
 
 // ON CONFLICT (event_id, employee_id) DO UPDATE SET event_id = excluded.event_id, employee_id = excluded.employee_id RETURNING (event_id, employee_id)
