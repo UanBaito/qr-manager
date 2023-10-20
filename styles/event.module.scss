@@ -1,5 +1,14 @@
 .container {
   text-align: center;
+
+  img {
+    width: 200px;
+    margin-bottom: 1rem;
+  }
+}
+
+.table_container {
+  position: relative;
 }
 
 .info {

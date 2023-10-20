@@ -19,7 +19,7 @@ export default async function handler(
     const { eventID, employeeID } = req.query;
     if (!Array.isArray(eventID) && !Array.isArray(employeeID)) {
       if (!eventID || !employeeID) {
-        res.status(400).send("API endpoint need both eventID and employeeID");
+        res.status(400).send("API endpoint needs both eventID and employeeID");
       }
       try {
         console.log(req.query);

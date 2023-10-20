@@ -40,6 +40,7 @@ export async function postEmployee(text: string, eventID?: string) {
   }
 
   const client = await db.connect();
+
   await client.query("BEGIN;");
   await client.query(
     "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS, permission text) ON COMMIT DROP;"
@@ -72,6 +73,7 @@ export async function postEmployee(text: string, eventID?: string) {
   );
   console.log(results);
   await client.query("COMMIT;");
+
   client.release();
 }
 
@@ -104,7 +106,7 @@ export default async function handler(
     /// TODO: fix this part here
     try {
       const { CSVtext, eventID } = JSON.parse(req.body);
-      postEmployee(CSVtext, eventID);
+      await postEmployee(CSVtext, eventID);
       res.send("Database updated");
     } catch (err) {
       console.log(err);

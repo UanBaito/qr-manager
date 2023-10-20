@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaPrint } from "react-icons/fa6";
 
 export default function PrintButton({
   event_id,
@@ -12,7 +13,7 @@ export default function PrintButton({
       target="_blank"
       href={`/qr?employeeID=${employee_id}&eventID=${event_id}`}
     >
-      Imprimir
+      <FaPrint />
     </a>
   );
 }

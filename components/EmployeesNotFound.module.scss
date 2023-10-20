@@ -1,0 +1,18 @@
+.container {
+  position: absolute;
+  bottom: 50%;
+  right: 50%;
+  transform: translate(50%, 50%);
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0.5;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  svg {
+    size: 20rem;
+  }
+}

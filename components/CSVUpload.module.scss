@@ -1,0 +1,42 @@
+.container {
+  display: inline;
+  position: absolute;
+  top: 3%;
+  right: 2%;
+  padding: 0 0.2rem 0.8rem;
+  form {
+    input {
+      display: none;
+    }
+    label:hover {
+      cursor: pointer;
+    }
+    .icon {
+      width: 22px;
+      margin-top: 4px;
+    }
+  }
+}
+
+.message {
+  visibility: hidden;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  padding: 4px;
+  font-weight: 700;
+  background-color: $background-200;
+  opacity: 0;
+  transition: opacity 0.2s linear;
+}
+
+.success {
+  visibility: visible;
+  border: 1px solid $sucess-500;
+  opacity: 1;
+}
+
+.error {
+  visibility: visible;
+  opacity: 1;
+  border: 1px solid $error-500;
+}

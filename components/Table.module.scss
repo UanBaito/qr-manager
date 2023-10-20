@@ -1,16 +1,45 @@
-.table {
-  width: 100%;
-  text-align: center;
-  border: 1px solid black;
-  thead {
-    tr {
-      width: 20%;
+.container {
+  border: 1px solid $secondary-700;
+  border-radius: 10px;
+  padding: 0.4rem;
+  min-height: 350px;
+  background-color: $background-200;
+
+  .table_title_container {
+    border-bottom: 1px solid $secondary-700;
+    padding: 0.5rem;
+    width: 100%;
+    h2 {
+      display: inline;
+      font-size: 1rem;
+      margin: 0;
     }
   }
-  tbody {
-    td {
-      text-transform: capitalize;
-      padding: 5px;
+
+  table {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+
+    a {
+      color: $text-500;
+    }
+    tr {
+      border-top: 1px solid $secondary-700;
+    }
+    td,
+    th {
+      padding: 0.6rem;
+    }
+    thead {
+      tr {
+        width: 20%;
+      }
+    }
+    tbody {
+      td {
+        text-transform: capitalize;
+      }
     }
   }
 }

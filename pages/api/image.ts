@@ -30,6 +30,7 @@ export default async function handler(
     const lastDigit = cedula.charAt(10);
     return `${firstThreeDigits}-${middleThreeDigits}-${middleFourDigits}-${lastDigit}`;
   }
+
   const formattedCedula = formatCedula(cedula);
   console.log(formattedCedula);
 

@@ -1,11 +1,12 @@
 import Layout from "../../components/Layout";
-import Table from "../../components/Table";
+import EventTable from "../../components/EventTable";
 import styles from "../../styles/event.module.scss";
 import PrintButton from "../../components/PrintButton";
-import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import CSVUpload from "../../components/CSVUpload";
 import { baseUrl } from "../../lib/constants";
+import EmployeesNotFound from "../../components/EmployeesNotFound";
+import { useRef } from "react";
 
 export default function Event({ eventID }) {
   const eventQuery = useQuery({
@@ -19,61 +20,44 @@ export default function Event({ eventID }) {
       }
     },
   });
-  const employeesQuery = useQuery({
-    queryKey: ["employees", eventID],
-    queryFn: async () => {
-      const response = await fetch(
-        `${baseUrl}/api/employee?eventID=${eventID}`
-      );
-      if (!response.ok) {
-        throw new Error("Something went wrong");
-      } else {
-        return await response.json();
-      }
-    },
-  });
+
+  const messageDivRef = useRef<HTMLDivElement>(null);
 
   ///TODO: separate this so the whole application wont stop if there is an error with one of the two queries
 
-  if (eventQuery.isLoading || employeesQuery.isLoading) {
-    return <>...loading</>;
-  }
-
-  if (eventQuery.isError || employeesQuery.isError) {
-    return <>error</>;
-  }
-
-  const event = eventQuery.data[0];
-  const employees = employeesQuery.data;
-
-  // / I do this because I want to modify one of the properties, but dont want to change the original
-  // / object in case I may need it later
-  const EmployeesArrayCopy = [...employees];
-  EmployeesArrayCopy.forEach((employee: employee) => {
-    employee.print = (
-      <PrintButton employee_id={employee.id} event_id={event.id} />
+  if (eventQuery.isLoading) {
+    return (
+      <Layout>
+        <section className={styles.container}>
+          <>loading...</>
+        </section>
+      </Layout>
     );
-    employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
-  });
+  }
+
+  if (eventQuery.isError) {
+    return (
+      <Layout>
+        <section className={styles.container}>
+          <>loading...</>
+        </section>
+      </Layout>
+    );
+  }
+
+  const event: event = eventQuery.data[0];
 
   return (
     <Layout>
       <section className={styles.container}>
-        <h1>Evento</h1>
-        <div className={styles.info}>
-          <ul>
-            <li>
-              <h2>Nombre del evento: </h2>
-              <span>{event.name}</span>
-            </li>
-          </ul>
+        <h1>{event.name}</h1>
+        <img src="/music_logo.png" alt="Event logo"></img>
+        <div ref={messageDivRef} className={styles.message}></div>
+        <div className={styles.table_container}>
+          <EventTable event={event} />
+          {/* {employees.length === 0 ? <EmployeesNotFound /> : null} */}
+          <CSVUpload eventID={event.id} messageDivRef={messageDivRef} />
         </div>
-        <Table
-          data={EmployeesArrayCopy}
-          title="Empleados asignados a este evento"
-          viewEndpoint="/employees/"
-        />
-        <CSVUpload eventID={event.id} />
       </section>
     </Layout>
   );
