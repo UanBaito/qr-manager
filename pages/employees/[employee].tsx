@@ -1,7 +1,7 @@
 import Layout from "../../components/Layout";
 import styles from "../../styles/employee.module.scss";
 import { useQuery } from "@tanstack/react-query";
-import PrintButton from "../../components/PrintButton";
+
 import { baseUrl, formatCedula } from "../../lib/constants";
 import EmployeeTable from "../../components/EmployeeTable";
 
