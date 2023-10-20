@@ -5,20 +5,20 @@
   display: flex;
   gap: 1rem;
   max-width: 1024px;
-
   li {
     max-width: 300px;
-    max-height: 160px;
+
     flex-shrink: 1;
     box-shadow: $secondary-700 0 0 5px 1px;
     border-radius: 10px;
-
+    background-color: $background-200;
     transition: transform 0.2s ease;
+    border: 1px solid $secondary-700;
+    color: $text-100;
     button {
-      background-color: $background-200;
-      border-radius: 10px;
-      border: 1px solid $secondary-700;
-      color: $text-100;
+      background-color: transparent;
+      color: inherit;
+      border-radius: inherit;
     }
     button:hover {
       cursor: pointer;
