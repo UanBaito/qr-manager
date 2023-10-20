@@ -1,14 +1,28 @@
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import "dotenv/config";
 import { baseUrl } from "../lib/constants";
+import styles from "./CSVUpload.module.scss";
+import { FaUpload } from "react-icons/fa6";
+import BeatLoader from "react-spinners/BeatLoader";
+import { MutableRefObject, useEffect } from "react";
 
-export default function CSVUpload({ eventID }: { eventID: string }) {
-  const [file, setFile] = useState<File>(null);
+export default function CSVUpload({
+  eventID,
+  messageDivRef,
+}: {
+  eventID: string;
+  messageDivRef: MutableRefObject<HTMLDivElement>;
+}) {
+  const queryClient = useQueryClient();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    if (messageDivRef.current) {
+      messageDivRef.current.classList.add(styles.message);
+    }
+  }, [messageDivRef.current]);
+
+  async function handleSubmit(file: File) {
     console.log(file);
-    e.preventDefault();
 
     if (file) {
       const text = await file.text();
@@ -24,25 +38,53 @@ export default function CSVUpload({ eventID }: { eventID: string }) {
       });
       if (!res.ok) {
         throw new Error("something went wrong");
+      } else {
+        return;
       }
-      const result = res.json();
-      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["event"] });
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      messageDivRef.current.classList.remove(styles.error);
+      messageDivRef.current.textContent = "Lista actualizada";
+      messageDivRef.current.classList.add(styles.success);
+    },
+    onError: () => {
+      messageDivRef.current.classList.remove(styles.success);
+      messageDivRef.current.textContent =
+        "Hubo un problema al actualizar la lista";
+      messageDivRef.current.classList.add(styles.error);
     },
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setFile(e.target.files[0]);
+    handleSubmit(e.target.files[0]);
   }
 
   return (
-    <form method="post" onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="file">Choose file to upload</label>
-        <input type="file" name="file" onChange={handleChange} accept=".csv" />
-      </div>
-      <div>
-        <button>Submit</button>
-      </div>
-    </form>
+    <div className={styles.container}>
+      {employeesMutation.isPending ? (
+        <BeatLoader color="#6784c0" size={8} margin={0} />
+      ) : (
+        <>
+          {employeesMutation.isError ? "" : null}
+
+          {employeesMutation.isSuccess ? "" : null}
+
+          <form method="post">
+            <label htmlFor="file">
+              <FaUpload className={styles.icon} />
+            </label>
+            <input
+              id="file"
+              type="file"
+              name="file"
+              onChange={handleChange}
+              accept=".csv"
+            />
+          </form>
+        </>
+      )}
+    </div>
   );
 }

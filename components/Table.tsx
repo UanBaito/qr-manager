@@ -1,13 +1,14 @@
 import Link from "next/link";
 import styles from "./Table.module.scss";
+import CSVUpload from "./CSVUpload";
+import { FaEye } from "react-icons/fa6";
 
 export default function Table({
   data,
-  title,
   viewEndpoint,
 }: {
   data: any[];
-  title: string;
+
   viewEndpoint: string;
 }) {
   const dataRows = data.map((dataRow) => {
@@ -24,7 +25,6 @@ export default function Table({
       } else if (column === "name") {
         columns.push("Nombre");
       } else if (column === "print") {
-        columns.push("Imprimir");
       } else if (column === "created_at") {
       } else if (column === "cedula") {
         columns.push("Cédula");
@@ -41,13 +41,17 @@ export default function Table({
   });
 
   return (
-    <table className={styles.table}>
-      <caption>{title}</caption>
-      <thead>
-        <tr>{columnsHead}</tr>
-      </thead>
-      <tbody>{dataRows}</tbody>
-    </table>
+    <div className={styles.container}>
+      <div className={styles.table_title_container}>
+        <h2>Empleados asignados a este evento</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>{columnsHead}</tr>
+        </thead>
+        <tbody>{dataRows}</tbody>
+      </table>
+    </div>
   );
 }
 
@@ -73,7 +77,9 @@ export function TableRow({
     <tr>
       {mappedCells}
       <td>
-        <Link href={viewEndpoint + data.id}>Ver</Link>
+        <Link href={viewEndpoint + data.id}>
+          <FaEye size={22} />
+        </Link>
       </td>
     </tr>
   );

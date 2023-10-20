@@ -1,0 +1,40 @@
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1rem;
+  max-width: 1024px;
+  li {
+    max-width: 300px;
+    max-height: 160px;
+    flex-shrink: 1;
+    button {
+      background-color: $background-200;
+      border-radius: 10px;
+      border: 1px solid $secondary-700;
+      color: $text-100;
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      cursor: pointer;
+      transform: scale(105%);
+    }
+
+    .card {
+      img {
+        width: 160px;
+      }
+      .card_body {
+        h2 {
+          margin: 0;
+          font-size: 1.6rem;
+          height: 60px;
+          text-align: center;
+          text-transform: capitalize;
+        }
+      }
+    }
+  }
+}

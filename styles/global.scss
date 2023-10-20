@@ -1,9 +1,12 @@
 html,
 body {
+  background-color: $background-100;
+  color: $text-100;
   padding: 0;
   margin: 0;
   font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
     Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  height: 100%;
 }
 
 a {
@@ -18,13 +21,6 @@ a {
 img {
   max-width: 100%;
   height: auto;
-}
-
-html {
-  height: 1px !important;
-}
-next-route-announcer {
-  height: 1px !important;
 }
 
 @media print {

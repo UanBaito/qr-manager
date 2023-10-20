@@ -34,8 +34,13 @@ export default async function handler(
       if (eventID && employeeID) {
         res.status(400).send("API route only works with one ID at a time");
       }
-      const result = await getEvent(eventID, employeeID);
-      res.send(result);
+      try {
+        const result = await getEvent(eventID, employeeID);
+        res.send(result);
+      } catch (err) {
+        console.log(err);
+        res.status(500).send("something went wrong");
+      }
     } else {
       res
         .status(400)
