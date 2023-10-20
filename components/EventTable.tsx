@@ -2,27 +2,43 @@ import Link from "next/link";
 import styles from "./Table.module.scss";
 import { FaEye } from "react-icons/fa6";
 import PrintButton from "./PrintButton";
-import { formatCedula } from "../lib/constants";
+import { baseUrl, formatCedula } from "../lib/constants";
+import { useQuery } from "@tanstack/react-query";
+import { ReactNode } from "react";
 
-export default function EventTable({
-  employees,
-  event,
-}: {
-  employees: employee[];
-  event: event;
-}) {
-  employees.forEach((employee: employee) => {
-    employee.cedula = formatCedula(employee.cedula);
-    employee.print = (
-      <PrintButton employee_id={employee.id} event_id={event.id} />
-    );
-
-    employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
+export default function EventTable({ event }: { event: event }) {
+  const employeesQuery = useQuery({
+    queryKey: ["employees", event.id],
+    queryFn: async () => {
+      const response = await fetch(
+        `${baseUrl}/api/employee?eventID=${event.id}`
+      );
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      } else {
+        return await response.json();
+      }
+    },
   });
 
-  const employeeRow = employees.map((employeeRow) => {
-    return <EventTableRow employeeRow={employeeRow} key={employeeRow.id} />;
-  });
+  let mappedTable: ReactNode[] = [];
+
+  if (!employeesQuery.isLoading && !employeesQuery.isError) {
+    const employees: employee[] = employeesQuery.data;
+
+    employees.forEach((employee: employee) => {
+      employee.cedula = formatCedula(employee.cedula);
+      employee.print = (
+        <PrintButton employee_id={employee.id} event_id={event.id} />
+      );
+
+      employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
+    });
+
+    mappedTable = employees.map((employeeRow) => {
+      return <EventTableRow employeeRow={employeeRow} key={employeeRow.id} />;
+    });
+  }
 
   return (
     <div className={styles.container}>
@@ -38,8 +54,17 @@ export default function EventTable({
             <th>Acceso</th>
           </tr>
         </thead>
-        <tbody>{employeeRow}</tbody>
+        <tbody>
+          {!employeesQuery.isError && !employeesQuery.isLoading
+            ? mappedTable
+            : null}
+        </tbody>
       </table>
+      {employeesQuery.isLoading ? (
+        <>loading</>
+      ) : employeesQuery.isError ? (
+        <>error</>
+      ) : null}
     </div>
   );
 }

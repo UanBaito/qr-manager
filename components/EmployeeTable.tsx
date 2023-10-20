@@ -2,24 +2,43 @@ import Link from "next/link";
 import PrintButton from "./PrintButton";
 import styles from "./Table.module.scss";
 import { FaEye } from "react-icons/fa6";
+import { useQuery } from "@tanstack/react-query";
+import { baseUrl } from "../lib/constants";
+import { ReactNode } from "react";
 
-export default function EmployeeTable({
-  events,
-  employee,
-}: {
-  employee: employee;
-  events: event[];
-}) {
-  events.forEach((event: event) => {
-    employee.print = (
-      <PrintButton employee_id={employee.id} event_id={event.id} />
-    );
-    employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
+export default function EmployeeTable({ employee }: { employee: employee }) {
+  const eventsQuery = useQuery({
+    queryKey: ["events", employee.id],
+    queryFn: async () => {
+      const response = await fetch(
+        `${baseUrl}/api/event?employeeID=${employee.id}`
+      );
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      } else {
+        return await response.json();
+      }
+    },
   });
 
-  const eventRow = events.map((eventRow) => {
-    return <EventTableRow eventRow={eventRow} key={eventRow.id} />;
-  });
+  let mappedTable: ReactNode[] = [];
+  if (!eventsQuery.isLoading && !eventsQuery.isError) {
+    const events: event[] = eventsQuery.data;
+    console.log(events);
+
+    events.forEach((event: event) => {
+      event.print = (
+        <PrintButton employee_id={employee.id} event_id={event.id} />
+      );
+      event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
+    });
+
+    mappedTable = events.map((eventRow) => {
+      return <EventTableRow eventRow={eventRow} key={eventRow.id} />;
+    });
+  }
+
+  console.log(mappedTable);
 
   return (
     <div className={styles.container}>
@@ -33,8 +52,15 @@ export default function EmployeeTable({
             <th>¿Ha imprimido el código QR?</th>
           </tr>
         </thead>
-        <tbody>{eventRow}</tbody>
+        <tbody>
+          {!eventsQuery.isError && !eventsQuery.isLoading ? mappedTable : null}
+        </tbody>
       </table>
+      {eventsQuery.isLoading ? (
+        <>loading</>
+      ) : eventsQuery.isError ? (
+        <>error</>
+      ) : null}
     </div>
   );
 }

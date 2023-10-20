@@ -20,35 +20,15 @@ export default function Employee({ employeeID }) {
     },
   });
 
-  const eventsQuery = useQuery({
-    queryKey: ["events", employeeID],
-    queryFn: async () => {
-      const response = await fetch(
-        `${baseUrl}/api/event?employeeID=${employeeID}`
-      );
-      if (!response.ok) {
-        throw new Error("Something went wrong");
-      } else {
-        return await response.json();
-      }
-    },
-  });
-
-  if (employeeQuery.isLoading || eventsQuery.isLoading) {
+  if (employeeQuery.isLoading) {
     return <>loading</>;
   }
 
-  if (employeeQuery.isError || eventsQuery.isError) {
+  if (employeeQuery.isError) {
     return <>error</>;
   }
 
   const employee: employee = employeeQuery.data[0];
-  const events: event[] = eventsQuery.data;
-
-  events.forEach((event: event) => {
-    event.print = <PrintButton employee_id={employee.id} event_id={event.id} />;
-    event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
-  });
 
   const formattedCedula = formatCedula(employee.cedula);
 
@@ -75,7 +55,7 @@ export default function Employee({ employeeID }) {
             </li>
           </ul>
         </div>
-        <EmployeeTable events={events} employee={employee} />
+        <EmployeeTable employee={employee} />
       </section>
     </Layout>
   );
