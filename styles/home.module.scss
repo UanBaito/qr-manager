@@ -1,0 +1,35 @@
+.container {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1024px;
+    li {
+      max-width: 200px;
+      background-color: $background-200;
+      border-radius: 10px;
+      border: 1px solid $secondary-700;
+      color: $text-200;
+      box-shadow: $secondary-700 0 0 5px 1px;
+      transition: transform 0.2s ease;
+      button {
+        border: none;
+        background-color: inherit;
+        border-radius: inherit;
+        color: inherit;
+        img {
+          background-color: white;
+        }
+      }
+      button:hover {
+        cursor: pointer;
+      }
+    }
+    li:hover {
+      transform: scale(105%);
+    }
+  }
+}
