@@ -30,7 +30,11 @@ export default function EventTable({ eventID }: { eventID: string }) {
     employees.forEach((employee: employee) => {
       employee.cedula = formatCedula(employee.cedula);
       employee.print = (
-        <PrintButton employee_id={employee.id} event_id={eventID} />
+        <PrintButton
+          employee_id={employee.id}
+          event_id={eventID}
+          has_printed_qr={employee.has_printed_qr}
+        />
       );
 
       employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";

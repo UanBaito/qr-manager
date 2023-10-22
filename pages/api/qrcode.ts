@@ -46,7 +46,8 @@ export async function postQrcode(employeeID: string, eventID: string) {
       [employeeID, eventID]
     );
     const results = await client.query(
-      "INSERT INTO qrcodes(event_id, employee_id) VALUES ($1 ,$2) RETURNING qrcode_string;"
+      "INSERT INTO qrcodes(event_id, employee_id) VALUES ($2, $1) RETURNING qrcode_string;",
+      [employeeID, eventID]
     );
     await client.query("COMMIT;");
     const qrcodeResult = results.rows[0];
@@ -68,8 +69,8 @@ export default async function handler(
       !Array.isArray(employeeID)
     ) {
       let result;
-      if (eventID && employeeID) {
-        result = await getQrcode(qrcode, eventID, employeeID);
+      if (eventID) {
+        result = await getQrcode(qrcode, eventID);
         res.send(result);
       } else if (qrcode) {
         result = await getQrcode(qrcode);

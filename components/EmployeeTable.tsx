@@ -29,7 +29,11 @@ export default function EmployeeTable({ employeeID }: { employeeID: string }) {
 
     events.forEach((event: event) => {
       event.print = (
-        <PrintButton employee_id={employeeID} event_id={event.id} />
+        <PrintButton
+          employee_id={employeeID}
+          event_id={event.id}
+          has_printed_qr={event.has_printed_qr}
+        />
       );
       event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
     });

@@ -15,7 +15,7 @@ export default function Event({ eventID }) {
         <EventInfo eventID={eventID} />
         <div ref={messageDivRef} className={styles.message}></div>
         <div className={styles.table_container}>
-          <ExportQrcodes />
+          <ExportQrcodes eventID={eventID} />
           <EventTable eventID={eventID} />
           {/* {employees.length === 0 ? <EmployeesNotFound message={"a"} /> : null} */}
           <CSVUpload eventID={eventID} messageDivRef={messageDivRef} />
