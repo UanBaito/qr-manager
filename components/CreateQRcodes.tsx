@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import styles from "./CreateQRcodes.module.scss";
 import { baseUrl } from "../lib/constants";
+import { FaQrcode } from "react-icons/fa6";
 
 export default function CreateQRcodes({ eventID }: { eventID: string }) {
   const queryClient = useQueryClient();
@@ -29,7 +30,7 @@ export default function CreateQRcodes({ eventID }: { eventID: string }) {
           qrcodesMutation.mutate();
         }}
       >
-        create qr codes
+        <FaQrcode className={styles.icon} />
       </button>
     </div>
   );

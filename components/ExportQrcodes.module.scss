@@ -2,18 +2,16 @@
   border: none;
   display: inline;
   position: absolute;
-  top: 2%;
+  top: 3%;
   left: 2%;
-  padding: 0 0.2rem 0.8rem;
   z-index: 1;
-  color: $primary-700;
+  color: $text-500;
   background-color: transparent;
   padding: 0;
 
   .icon {
     width: 22px;
     height: 22px;
-    margin-top: 4px;
   }
 }
 .button:hover {
