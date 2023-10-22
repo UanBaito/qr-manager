@@ -1,8 +1,26 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import db from "../../lib/db";
 
-export async function getQrcode(qrcode: string) {
-  if (qrcode) {
+export async function getQrcode(
+  qrcode: string,
+  eventID?: string,
+  employeeID?: string
+) {
+  if (eventID) {
+    const client = await db.connect();
+    try {
+      ///TODO: construct query
+      const results = await client.query(
+        "SELECT * FROM qrcodes WHERE event_id = $1",
+        [eventID]
+      );
+      const qrcodeResult = results.rows;
+      console.log(results);
+      return qrcodeResult;
+    } finally {
+      client.release();
+    }
+  } else if (qrcode) {
     ///send individual qrCode
     const client = await db.connect();
     try {
@@ -10,16 +28,6 @@ export async function getQrcode(qrcode: string) {
         "SELECT EXTRACT(DAYS FROM (created_at - NOW())) AS age FROM qrcodes WHERE qrcode_string = $1",
         [qrcode]
       );
-      const qrcodeResult = results.rows;
-      return qrcodeResult;
-    } finally {
-      client.release();
-    }
-  } else {
-    const client = await db.connect();
-    try {
-      ///TODO: construct query
-      const results = await client.query("");
       const qrcodeResult = results.rows;
       return qrcodeResult;
     } finally {
@@ -38,7 +46,7 @@ export async function postQrcode(employeeID: string, eventID: string) {
       [employeeID, eventID]
     );
     const results = await client.query(
-      "INSERT INTO qrcodes DEFAULT VALUES RETURNING qrcode_string;"
+      "INSERT INTO qrcodes(event_id, employee_id) VALUES ($1 ,$2) RETURNING qrcode_string;"
     );
     await client.query("COMMIT;");
     const qrcodeResult = results.rows[0];
@@ -53,19 +61,23 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
-    const qrcode = req.query.qrcode;
-    if (!Array.isArray(qrcode)) {
-      if (!qrcode) {
-        res
-          .status(400)
-          .send(
-            "Get request for this route needs QRcode string as query parameter"
-          );
+    const { employeeID, eventID, qrcode } = req.query;
+    if (
+      !Array.isArray(qrcode) &&
+      !Array.isArray(eventID) &&
+      !Array.isArray(employeeID)
+    ) {
+      let result;
+      if (eventID && employeeID) {
+        result = await getQrcode(qrcode, eventID, employeeID);
+        res.send(result);
+      } else if (qrcode) {
+        result = await getQrcode(qrcode);
+        if (result.length === 0) {
+          res.status(404).send("Qrcode does not exist on database");
+        }
       }
-      const result = await getQrcode(qrcode);
-      if (result.length === 0) {
-        res.status(404).send("Qrcode does not exist on database");
-      }
+
       res.send(result[0]);
     } else {
       res
