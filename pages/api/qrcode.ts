@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import db from "../../lib/db";
+import format from "pg-format";
 
 export async function getQrcode(
   qrcode: string,
@@ -61,10 +62,24 @@ export async function putQrcode(eventID: string) {
   const client = await db.connect();
   try {
     await client.query("BEGIN;");
-    const results = await client.query(
-      "INSERT INTO qrcodes(event_id, employee_id) VALUES ($1, (SELECT employee_id FROM events_employees WHERE event_id = $1) ON CONFLICT DO NOTHING RETURNING qrcode_string;",
+
+    const ids = await client.query(
+      "SELECT employee_id FROM events_employees WHERE event_id = $1",
       [eventID]
     );
+
+    const mappedIds = ids.rows.map((employee_id) => [
+      eventID,
+      employee_id.employee_id,
+    ]);
+
+    const results = await client.query(
+      format(
+        "INSERT INTO qrcodes(event_id, employee_id) VALUES %L ON CONFLICT DO NOTHING;",
+        mappedIds
+      )
+    );
+    await client.query("COMMIT;");
     console.log(results);
   } finally {
     client.release();
@@ -122,8 +137,11 @@ export default async function handler(
     if (!Array.isArray(eventID)) {
       if (eventID) {
         try {
+          console.log(eventID);
           await putQrcode(eventID);
+          res.send("QRcodes generated");
         } catch (error) {
+          console.log(error);
           res.status(500).send("Something went wrong");
         }
       }
