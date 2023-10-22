@@ -6,10 +6,12 @@ export default function PrintButton({
   event_id,
   employee_id,
   has_printed_qr,
+  has_generated_qr,
 }: {
   event_id: string;
   employee_id: string;
   has_printed_qr: boolean | string;
+  has_generated_qr: boolean | string;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -26,7 +28,7 @@ export default function PrintButton({
     <>
       <button
         onClick={handleClick}
-        disabled={!!has_printed_qr}
+        disabled={!!has_printed_qr || !!!has_generated_qr}
         className={styles.button}
       >
         <FaPrint className={styles.icon} />

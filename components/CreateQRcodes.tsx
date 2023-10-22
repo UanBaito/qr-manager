@@ -1,14 +1,24 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import styles from "./CreateQRcodes.module.scss";
 import { baseUrl } from "../lib/constants";
 
 export default function CreateQRcodes({ eventID }: { eventID: string }) {
+  const queryClient = useQueryClient();
+
   const qrcodesMutation = useMutation({
     mutationFn: async () => {
-      const res = fetch(`${baseUrl}/api/qrcode`, {
+      const res = await fetch(`${baseUrl}/api/qrcode`, {
         method: "PUT",
         body: JSON.stringify({ eventID: eventID }),
       });
+      if (!res.ok) {
+        throw new Error("Something went wrong");
+      }
+      return;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["event"] });
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
     },
   });
 

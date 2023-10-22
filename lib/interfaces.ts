@@ -7,6 +7,7 @@ type employee = {
   cedula: string;
   print?: React.ReactNode;
   has_printed_qr?: boolean | string;
+  has_generated_qr?: boolean | string;
 };
 
 type event = {
@@ -16,6 +17,7 @@ type event = {
   /// print button
   print?: React.ReactNode;
   has_printed_qr?: boolean | string;
+  has_generated_qr?: boolean | string;
 };
 
 type user = {

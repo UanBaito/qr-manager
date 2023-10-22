@@ -16,7 +16,7 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
   } else if (eventID) {
     /// send employees from events
     query = format(
-      "SELECT employees.id, employees.name, employees.cedula, events_employees.has_printed_qr, events_employees.permission FROM employees, events_employees WHERE events_employees.event_id = '%s' AND events_employees.employee_id = employees.id ORDER BY name DESC",
+      "SELECT employees.id, employees.name, employees.cedula, events_employees.has_printed_qr, events_employees.permission, events_employees.has_generated_qr FROM employees, events_employees WHERE events_employees.event_id = '%s' AND events_employees.employee_id = employees.id ORDER BY name DESC",
       eventID
     );
   } else {

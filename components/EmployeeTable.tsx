@@ -33,9 +33,11 @@ export default function EmployeeTable({ employeeID }: { employeeID: string }) {
           employee_id={employeeID}
           event_id={event.id}
           has_printed_qr={event.has_printed_qr}
+          has_generated_qr={event.has_generated_qr}
         />
       );
       event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
+      event.has_generated_qr = event.has_generated_qr ? "Si" : "No";
     });
 
     mappedTable = events.map((eventRow) => {
@@ -54,7 +56,8 @@ export default function EmployeeTable({ employeeID }: { employeeID: string }) {
         <thead>
           <tr>
             <th>Evento</th>
-            <th>¿Ha imprimido el código QR?</th>
+            <th>¿Ha imprimido el cintillo?</th>
+            <th>¿Ha generado el código QR?</th>
           </tr>
         </thead>
         <tbody>
@@ -77,8 +80,8 @@ export function EventTableRow({ eventRow }: { eventRow: event }) {
     }
   }
 
-  const mappedCells = cells.map((cells) => {
-    return <td key={"cell-" + cells}>{cells}</td>;
+  const mappedCells = cells.map((cells, index) => {
+    return <td key={"cell-" + cells + "-" + index}>{cells}</td>;
   });
   return (
     <tr>

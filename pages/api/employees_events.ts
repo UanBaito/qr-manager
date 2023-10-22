@@ -17,6 +17,7 @@ async function getRelation(eventID: string, employeeID: string) {
 export async function putRelation(eventID: string, employeeID: string) {
   const client = await db.connect();
   try {
+    ///TODO: FAIL IF PRINTED QR WAS TRUE BEFORE
     await client.query("BEGIN;");
     const qrcodeStringResult = await client.query(
       "SELECT qrcode_string FROM qrcodes WHERE event_id = $1 AND employee_id = $2;",
