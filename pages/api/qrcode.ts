@@ -7,10 +7,22 @@ export async function getQrcode(
   eventID?: string,
   employeeID?: string
 ) {
-  if (eventID) {
+  if (eventID && employeeID) {
     const client = await db.connect();
     try {
-      ///TODO: construct query
+      const results = await client.query(
+        "SELECT qrcode_string FROM qrcodes WHERE event_id = $1 AND employee_id = $2",
+        [eventID, employeeID]
+      );
+      const qrcodeResult = results.rows;
+      console.log(results);
+      return qrcodeResult;
+    } finally {
+      client.release();
+    }
+  } else if (eventID) {
+    const client = await db.connect();
+    try {
       const results = await client.query(
         "SELECT * FROM qrcodes WHERE event_id = $1",
         [eventID]
@@ -46,13 +58,7 @@ export async function postQrcode(employeeID: string, eventID: string) {
       "UPDATE events_employees AS ee SET has_printed_qr = 'true' WHERE ee.employee_id = $1 AND ee.event_id = $2",
       [employeeID, eventID]
     );
-    const results = await client.query(
-      "INSERT INTO qrcodes(event_id, employee_id) VALUES ($2, $1) RETURNING qrcode_string;",
-      [employeeID, eventID]
-    );
     await client.query("COMMIT;");
-    const qrcodeResult = results.rows[0];
-    return qrcodeResult;
   } finally {
     client.release();
   }
@@ -118,8 +124,8 @@ export default async function handler(
     const { employeeID, eventID } = JSON.parse(req.body);
     if (!Array.isArray(employeeID) && !Array.isArray(eventID)) {
       if (eventID && employeeID) {
-        const result = await postQrcode(employeeID, eventID);
-        res.send(result);
+        await postQrcode(employeeID, eventID);
+        res.send("Ok");
       } else {
         res
           .status(400)
