@@ -37,7 +37,7 @@ export default function EventTable({ eventID }: { eventID: string }) {
           has_generated_qr={employee.has_generated_qr}
         />
       );
-      console.log(employee);
+
       employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
       employee.has_generated_qr = employee.has_generated_qr ? "Si" : "No";
     });

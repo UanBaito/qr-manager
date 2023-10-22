@@ -15,7 +15,7 @@ export async function getQrcode(
         [eventID, employeeID]
       );
       const qrcodeResult = results.rows;
-      console.log(results);
+
       return qrcodeResult;
     } finally {
       client.release();
@@ -28,7 +28,7 @@ export async function getQrcode(
         [eventID]
       );
       const qrcodeResult = results.rows;
-      console.log(results);
+
       return qrcodeResult;
     } finally {
       client.release();
@@ -91,7 +91,6 @@ export async function putQrcode(eventID: string) {
     );
 
     await client.query("COMMIT;");
-    console.log(results);
   } finally {
     client.release();
   }
@@ -162,5 +161,3 @@ export default async function handler(
     }
   }
 }
-
-///a

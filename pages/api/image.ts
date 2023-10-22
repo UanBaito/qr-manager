@@ -32,8 +32,6 @@ export default async function handler(
   }
 
   const formattedCedula = formatCedula(cedula);
-  console.log(formattedCedula);
-
   const names = employeeInfo.name.split(" ");
   const capitalizedNamesArray = names.map((name) => {
     return name.charAt(0).toUpperCase() + name.substring(1);

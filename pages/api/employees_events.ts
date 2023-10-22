@@ -17,7 +17,14 @@ async function getRelation(eventID: string, employeeID: string) {
 export async function putRelation(eventID: string, employeeID: string) {
   const client = await db.connect();
   try {
-    ///TODO: FAIL IF PRINTED QR WAS TRUE BEFORE
+    const hasPrintedQrResult = await client.query(
+      "SELECT has_printed_qr FROM events_employees WHERE event_id = $1 AND employee_id = $2",
+      [eventID, employeeID]
+    );
+    if (hasPrintedQrResult?.rows[0]?.has_printed_qr) {
+      throw new Error("QRcode has been printed before");
+    }
+
     await client.query("BEGIN;");
     const qrcodeStringResult = await client.query(
       "SELECT qrcode_string FROM qrcodes WHERE event_id = $1 AND employee_id = $2;",

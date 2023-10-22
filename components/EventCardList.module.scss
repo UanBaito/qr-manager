@@ -10,9 +10,10 @@
 
     flex-shrink: 1;
     box-shadow: $secondary-700 0 0 5px 1px;
+    transition: transform 0.2s ease;
     border-radius: 10px;
     background-color: $background-200;
-    transition: transform 0.2s ease;
+
     border: 1px solid $secondary-700;
     color: $text-100;
     button {

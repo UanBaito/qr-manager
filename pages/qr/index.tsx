@@ -1,12 +1,18 @@
 import { NextPageContext } from "next";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import QRCode from "qrcode";
 import { baseUrl } from "../../lib/constants";
+import { useEffect } from "react";
 
 export default function Qr({ eventID, employeeID }) {
-  const qrcodeQuery = useQuery({
-    queryKey: ["qrcode", employeeID, eventID],
-    queryFn: async () => {
+  useEffect(() => {
+    qrcodeMutation.mutate();
+  }, []);
+
+  const queryClient = useQueryClient();
+  ///TODO: figure out why query wont invalidate on chrome
+  const qrcodeMutation = useMutation({
+    mutationFn: async () => {
       const res = await fetch(`${baseUrl}/api/employees_events`, {
         method: "PUT",
         body: JSON.stringify({ employeeID: employeeID, eventID: eventID }),
@@ -17,8 +23,12 @@ export default function Qr({ eventID, employeeID }) {
       const qrcodeString = await res.json();
       return qrcodeString;
     },
-    refetchOnWindowFocus: false,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["event"] });
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
   });
+
   const employeeQuery = useQuery({
     queryKey: ["employee", employeeID],
     queryFn: async () => {
@@ -33,6 +43,7 @@ export default function Qr({ eventID, employeeID }) {
     },
     refetchOnWindowFocus: false,
   });
+
   const eventEmployeeQuery = useQuery({
     queryKey: ["eventEmployeeQuery", employeeID, eventID],
     queryFn: async () => {
@@ -48,7 +59,7 @@ export default function Qr({ eventID, employeeID }) {
     refetchOnWindowFocus: false,
   });
 
-  const qrcodeString = qrcodeQuery.data;
+  const qrcodeString = qrcodeMutation.data;
   const employeeInfo = employeeQuery.data;
   const relationInfo = eventEmployeeQuery.data;
 
@@ -87,7 +98,7 @@ export default function Qr({ eventID, employeeID }) {
   const canvasDataURL = imageQuery.data;
   const printAndClose = () => {
     window.print();
-    window.close();
+    /// window.close();
   };
 
   return <img src={canvasDataURL} onLoad={printAndClose} />;

@@ -25,7 +25,6 @@ export default function EmployeeTable({ employeeID }: { employeeID: string }) {
   let mappedTable: ReactNode[] = [];
   if (!eventsQuery.isLoading && !eventsQuery.isError) {
     const events: event[] = eventsQuery.data;
-    console.log(events);
 
     events.forEach((event: event) => {
       event.print = (
@@ -44,8 +43,6 @@ export default function EmployeeTable({ employeeID }: { employeeID: string }) {
       return <EventTableRow eventRow={eventRow} key={eventRow.id} />;
     });
   }
-
-  console.log(mappedTable);
 
   return (
     <div className={styles.container}>

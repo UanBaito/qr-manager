@@ -9,7 +9,6 @@ export default function ExportQrcodes({ eventID }: { eventID: string }) {
       throw new Error("Something went wrong");
     }
     const result = await res.json();
-    console.log(result);
   }
   return (
     <button className={styles.button} onClick={handleClick}>
