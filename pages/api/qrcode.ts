@@ -57,6 +57,20 @@ export async function postQrcode(employeeID: string, eventID: string) {
   }
 }
 
+export async function putQrcode(eventID: string) {
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN;");
+    const results = await client.query(
+      "INSERT INTO qrcodes(event_id, employee_id) VALUES ($1, (SELECT employee_id FROM events_employees WHERE event_id = $1) ON CONFLICT DO NOTHING RETURNING qrcode_string;",
+      [eventID]
+    );
+    console.log(results);
+  } finally {
+    client.release();
+  }
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -102,6 +116,21 @@ export default async function handler(
       res
         .status(400)
         .send("Did not expect array of strings as value for one of the IDs");
+    }
+  } else if (req.method === "PUT") {
+    const { eventID } = JSON.parse(req.body);
+    if (!Array.isArray(eventID)) {
+      if (eventID) {
+        try {
+          await putQrcode(eventID);
+        } catch (error) {
+          res.status(500).send("Something went wrong");
+        }
+      }
+    } else {
+      res
+        .status(400)
+        .send("Did not expect array of strings as value for the ID");
     }
   }
 }
