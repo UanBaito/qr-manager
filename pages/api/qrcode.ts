@@ -69,10 +69,6 @@ export async function putQrcode(eventID: string) {
   try {
     await client.query("BEGIN;");
 
-    await client.query(
-      "UPDATE events_employees SET has_generated_qr = 'true' WHERE event_id = $1"
-    );
-
     const ids = await client.query(
       "SELECT employee_id FROM events_employees WHERE event_id = $1",
       [eventID]
@@ -89,6 +85,10 @@ export async function putQrcode(eventID: string) {
         mappedIds
       )
     );
+    await client.query(
+      "UPDATE events_employees SET has_generated_qr = 'true' WHERE event_id = $1"
+    );
+
     await client.query("COMMIT;");
     console.log(results);
   } finally {
