@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import db from "../../lib/db";
 
 async function getRelation(eventID: string, employeeID: string) {
-  console.log(eventID, employeeID);
   const client = await db.connect();
   try {
     const relationResults = await client.query(
@@ -24,11 +23,12 @@ export async function putRelation(eventID: string, employeeID: string) {
       [eventID, employeeID]
     );
     await client.query(
-      "UPDATE events_employees SET has_generated_qr = 'true' WHERE event_id = $1 AND employee_id = $2;",
+      "UPDATE events_employees SET has_printed_qr = 'true' WHERE event_id = $1 AND employee_id = $2;",
       [eventID, employeeID]
     );
     await client.query("COMMIT;");
-    console.log(qrcodeStringResult);
+
+    return qrcodeStringResult.rows;
   } finally {
     client.release();
   }
@@ -38,14 +38,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { eventID, employeeID } = req.query;
-  if (!Array.isArray(eventID) && !Array.isArray(employeeID)) {
-    if (req.method === "GET") {
+  if (req.method === "GET") {
+    const { eventID, employeeID } = req.query;
+    if (!Array.isArray(eventID) && !Array.isArray(employeeID)) {
       if (!eventID || !employeeID) {
         res.status(400).send("API endpoint needs both eventID and employeeID");
       }
       try {
-        console.log(req.query);
         const result = await getRelation(eventID, employeeID);
         if (result.length === 0) {
           res.status(404).send("relation not found");
@@ -55,25 +54,25 @@ export default async function handler(
         console.log(err);
         res.status(500).send("something went wrong");
       }
-    } else if (req.method === "PUT") {
-      if (!eventID || !employeeID) {
-        res.status(400).send("API endpoint needs both eventID and employeeID");
-      }
-      try {
-        console.log(req.query);
-        const result = await putRelation(eventID, employeeID);
-        // if (result.length === 0) {
-        //   res.status(404).send("relation not found");
-        // }
-        res.send(result[0]);
-      } catch (err) {
-        console.log(err);
-        res.status(500).send("something went wrong");
-      }
+    } else {
+      res
+        .status(400)
+        .send("Did not expect array of strings as value for one of the IDs");
     }
-  } else {
-    res
-      .status(400)
-      .send("Did not expect array of strings as value for one of the IDs");
+  } else if (req.method === "PUT") {
+    const { eventID, employeeID } = JSON.parse(req.body);
+    if (!eventID || !employeeID) {
+      res.status(400).send("API endpoint needs both eventID and employeeID");
+    }
+    try {
+      const result = await putRelation(eventID, employeeID);
+      if (result.length === 0) {
+        res.status(404).send("relation not found");
+      }
+      res.send(result[0]);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("something went wrong");
+    }
   }
 }

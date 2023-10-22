@@ -86,7 +86,8 @@ export async function putQrcode(eventID: string) {
       )
     );
     await client.query(
-      "UPDATE events_employees SET has_generated_qr = 'true' WHERE event_id = $1"
+      "UPDATE events_employees SET has_generated_qr = 'true' WHERE event_id = $1",
+      [eventID]
     );
 
     await client.query("COMMIT;");
@@ -147,7 +148,6 @@ export default async function handler(
     if (!Array.isArray(eventID)) {
       if (eventID) {
         try {
-          console.log(eventID);
           await putQrcode(eventID);
           res.send("QRcodes generated");
         } catch (error) {

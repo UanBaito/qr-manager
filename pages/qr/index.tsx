@@ -7,8 +7,8 @@ export default function Qr({ eventID, employeeID }) {
   const qrcodeQuery = useQuery({
     queryKey: ["qrcode", employeeID, eventID],
     queryFn: async () => {
-      const res = await fetch(`${baseUrl}/api/qrcode`, {
-        method: "POST",
+      const res = await fetch(`${baseUrl}/api/employees_events`, {
+        method: "PUT",
         body: JSON.stringify({ employeeID: employeeID, eventID: eventID }),
       });
       if (!res.ok) {
