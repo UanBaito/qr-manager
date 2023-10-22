@@ -4,6 +4,7 @@ import styles from "../../styles/event.module.scss";
 import CSVUpload from "../../components/CSVUpload";
 import { useRef } from "react";
 import EventInfo from "../../components/EventInfo";
+import ExportQrcodes from "../../components/ExportQrcodes";
 
 export default function Event({ eventID }) {
   const messageDivRef = useRef<HTMLDivElement>(null);
@@ -14,6 +15,7 @@ export default function Event({ eventID }) {
         <EventInfo eventID={eventID} />
         <div ref={messageDivRef} className={styles.message}></div>
         <div className={styles.table_container}>
+          <ExportQrcodes />
           <EventTable eventID={eventID} />
           {/* {employees.length === 0 ? <EmployeesNotFound message={"a"} /> : null} */}
           <CSVUpload eventID={eventID} messageDivRef={messageDivRef} />

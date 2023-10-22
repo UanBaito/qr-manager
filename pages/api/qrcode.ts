@@ -2,16 +2,29 @@ import { NextApiRequest, NextApiResponse } from "next";
 import db from "../../lib/db";
 
 export async function getQrcode(qrcode: string) {
-  const client = await db.connect();
-  try {
-    const results = await client.query(
-      "SELECT EXTRACT(DAYS FROM (created_at - NOW())) AS age FROM qrcodes WHERE qrcode_string = $1",
-      [qrcode]
-    );
-    const qrcodeResult = results.rows;
-    return qrcodeResult;
-  } finally {
-    client.release();
+  if (qrcode) {
+    ///send individual qrCode
+    const client = await db.connect();
+    try {
+      const results = await client.query(
+        "SELECT EXTRACT(DAYS FROM (created_at - NOW())) AS age FROM qrcodes WHERE qrcode_string = $1",
+        [qrcode]
+      );
+      const qrcodeResult = results.rows;
+      return qrcodeResult;
+    } finally {
+      client.release();
+    }
+  } else {
+    const client = await db.connect();
+    try {
+      ///TODO: construct query
+      const results = await client.query("");
+      const qrcodeResult = results.rows;
+      return qrcodeResult;
+    } finally {
+      client.release();
+    }
   }
 }
 
