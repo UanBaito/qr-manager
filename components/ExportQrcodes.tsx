@@ -8,11 +8,15 @@ export default function ExportQrcodes({ eventID }: { eventID: string }) {
     if (!res.ok) {
       throw new Error("Something went wrong");
     }
-    const result = await res.json();
+    const result = res.body;
+    console.log(result);
   }
   return (
-    <button className={styles.button} onClick={handleClick}>
-      <FaFileExport className={styles.icon} />
-    </button>
+    <>
+      <a href={`${baseUrl}/api/qrcode?eventID=${eventID}`}>aaaaaa</a>
+      <button className={styles.button} onClick={handleClick}>
+        <FaFileExport className={styles.icon} />
+      </button>
+    </>
   );
 }

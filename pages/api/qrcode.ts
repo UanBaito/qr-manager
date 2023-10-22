@@ -1,6 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import db from "../../lib/db";
 import format from "pg-format";
+import { to as copyTo } from "pg-copy-streams";
+import fs from "fs";
+import fsAsync from "fs/promises";
+import path from "path";
+import { pipeline } from "node:stream/promises";
 
 export async function getQrcode(
   qrcode: string,
@@ -23,13 +28,15 @@ export async function getQrcode(
   } else if (eventID) {
     const client = await db.connect();
     try {
-      const results = await client.query(
-        "SELECT * FROM qrcodes WHERE event_id = $1",
+      const eventNameResult = await client.query(
+        "SELECT name FROM events WHERE id = $1",
         [eventID]
       );
-      const qrcodeResult = results.rows;
-
-      return qrcodeResult;
+      const eventName = eventNameResult.rows[0].name;
+      const stream = client.query(
+        copyTo("COPY qrcodes(qrcode_string) TO STDOUT")
+      );
+      return { stream, eventName };
     } finally {
       client.release();
     }
@@ -79,7 +86,7 @@ export async function putQrcode(eventID: string) {
       employee_id.employee_id,
     ]);
 
-    const results = await client.query(
+    await client.query(
       format(
         "INSERT INTO qrcodes(event_id, employee_id) VALUES %L ON CONFLICT DO NOTHING;",
         mappedIds
@@ -109,8 +116,18 @@ export default async function handler(
     ) {
       let result;
       if (eventID) {
-        result = await getQrcode(qrcode, eventID);
-        res.send(result);
+        try {
+          result = await getQrcode(qrcode, eventID);
+          res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=${result.eventName}-qrcodes.csv`
+          );
+          res.setHeader("Content-Type", "text/csv");
+          await pipeline(result.stream, res);
+        } catch (err) {
+          console.log(err);
+          res.status(500).send("Something went wrong");
+        }
       } else if (qrcode) {
         result = await getQrcode(qrcode);
         if (result.length === 0) {
