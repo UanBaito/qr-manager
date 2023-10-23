@@ -8,6 +8,7 @@ export default NextAuth({
   providers: [
     CredentialsProvider({
       name: "credentials",
+
       id: "credentials",
 
       credentials: {
@@ -54,5 +55,8 @@ export default NextAuth({
       },
     }),
   ],
-  adapter: PostgresAdapter(db),
+
+  session: {
+    maxAge: 1 * 24 * 60 * 60,
+  },
 });
