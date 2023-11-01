@@ -49,7 +49,7 @@ export async function postEmployee(
         "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
       )
     );
-
+    console.log(stream);
     await pipeline(stream, ingestStream);
 
     const idsResults = await client.query(
