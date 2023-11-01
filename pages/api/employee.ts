@@ -7,6 +7,7 @@ import { pipeline } from "node:stream/promises";
 import path from "path";
 import fs from "fs";
 import fsAsync from "fs/promises";
+import { ReadableStream } from "stream/web";
 
 export async function getEmployee(eventID?: string, employeeID?: string) {
   let query = "";
@@ -32,14 +33,10 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
   }
 }
 
-export async function postEmployee(text: string, eventID?: string) {
-  try {
-    console.log(text);
-    await fsAsync.writeFile(path.join("/tmp", "empleados.csv"), text);
-    console.log("file writeddd");
-  } catch (err) {
-    throw err;
-  }
+export async function postEmployee(
+  stream: ReadableStream<Uint8Array>,
+  eventID?: string
+) {
   const client = await db.connect();
   try {
     await client.query("BEGIN;");
@@ -53,11 +50,7 @@ export async function postEmployee(text: string, eventID?: string) {
       )
     );
 
-    const sourceStream = fs.createReadStream(
-      path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
-    );
-
-    await pipeline(sourceStream, ingestStream);
+    await pipeline(stream, ingestStream);
 
     const idsResults = await client.query(
       "INSERT INTO employees(id, name, email, cedula, company) SELECT id, name, email, cedula, company FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
@@ -110,8 +103,8 @@ export default async function handler(
   if (req.method === "POST") {
     /// TODO: fix this part here
     try {
-      const { CSVtext, eventID } = JSON.parse(req.body);
-      await postEmployee(CSVtext, eventID);
+      const { stream, eventID } = JSON.parse(req.body);
+      await postEmployee(stream, eventID);
       res.send("Database updated");
     } catch (err) {
       console.log(err);

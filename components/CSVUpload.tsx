@@ -5,6 +5,7 @@ import styles from "./CSVUpload.module.scss";
 import { FaUpload } from "react-icons/fa6";
 import BeatLoader from "react-spinners/BeatLoader";
 import { MutableRefObject, useEffect } from "react";
+import { createReadStream } from "fs";
 
 export default function CSVUpload({
   eventID,
@@ -23,16 +24,15 @@ export default function CSVUpload({
 
   async function handleSubmit(file: File) {
     if (file) {
-      const text = await file.text();
-      employeesMutation.mutate(text);
+      employeesMutation.mutate(file.stream());
     }
   }
 
   const employeesMutation = useMutation({
-    mutationFn: async (CSVtext: string) => {
+    mutationFn: async (stream: ReadableStream<Uint8Array>) => {
       const res = await fetch(`${baseUrl}/api/employee`, {
         method: "POST",
-        body: JSON.stringify({ CSVtext, eventID }),
+        body: JSON.stringify({ stream, eventID }),
       });
       if (!res.ok) {
         throw new Error("something went wrong");
