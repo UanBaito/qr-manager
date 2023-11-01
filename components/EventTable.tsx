@@ -5,13 +5,14 @@ import PrintButton from "./PrintButton";
 import { baseUrl, formatCedula } from "../lib/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode } from "react";
+import BeatLoader from "react-spinners/BeatLoader";
 
-export default function EventTable({ event }: { event: event }) {
+export default function EventTable({ eventID }: { eventID: string }) {
   const employeesQuery = useQuery({
-    queryKey: ["employees", event.id],
+    queryKey: ["employees", eventID],
     queryFn: async () => {
       const response = await fetch(
-        `${baseUrl}/api/employee?eventID=${event.id}`
+        `${baseUrl}/api/employee?eventID=${eventID}`
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -29,10 +30,16 @@ export default function EventTable({ event }: { event: event }) {
     employees.forEach((employee: employee) => {
       employee.cedula = formatCedula(employee.cedula);
       employee.print = (
-        <PrintButton employee_id={employee.id} event_id={event.id} />
+        <PrintButton
+          employee_id={employee.id}
+          event_id={eventID}
+          has_printed_qr={employee.has_printed_qr}
+          has_generated_qr={employee.has_generated_qr}
+        />
       );
 
       employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
+      employee.has_generated_qr = employee.has_generated_qr ? "Si" : "No";
     });
 
     mappedTable = employees.map((employeeRow) => {
@@ -50,8 +57,9 @@ export default function EventTable({ event }: { event: event }) {
           <tr>
             <th>Nombre</th>
             <th>Cédula</th>
-            <th>¿Ha imprimido el código QR?</th>
+            <th>¿Ha imprimido el cintillo?</th>
             <th>Acceso</th>
+            <th>¿Ha generado el código QR?</th>
           </tr>
         </thead>
         <tbody>
@@ -61,9 +69,7 @@ export default function EventTable({ event }: { event: event }) {
         </tbody>
       </table>
       {employeesQuery.isLoading ? (
-        <>loading</>
-      ) : employeesQuery.isError ? (
-        <>error</>
+        <BeatLoader className={styles.icon} color="#6784c0" />
       ) : null}
     </div>
   );
@@ -78,8 +84,8 @@ export function EventTableRow({ employeeRow }: { employeeRow: employee }) {
     }
   }
 
-  const mappedCells = cells.map((cells) => {
-    return <td key={"cell-" + cells}>{cells}</td>;
+  const mappedCells = cells.map((cells, index) => {
+    return <td key={"cell-" + cells + "-" + index}>{cells}</td>;
   });
   return (
     <tr>

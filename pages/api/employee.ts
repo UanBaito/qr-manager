@@ -16,7 +16,7 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
   } else if (eventID) {
     /// send employees from events
     query = format(
-      "SELECT employees.id, employees.name, employees.cedula, events_employees.has_printed_qr, events_employees.permission FROM employees, events_employees WHERE events_employees.event_id = '%s' AND events_employees.employee_id = employees.id ORDER BY name DESC",
+      "SELECT employees.id, employees.name, employees.cedula, events_employees.has_printed_qr, events_employees.permission, events_employees.has_generated_qr FROM employees, events_employees WHERE events_employees.event_id = '%s' AND events_employees.employee_id = employees.id ORDER BY name DESC",
       eventID
     );
   } else {
@@ -24,10 +24,12 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
     query = "SELECT * FROM employees";
   }
   const client = await db.connect();
-  const results = await client.query(query);
-  client.release();
-
-  return results.rows;
+  try {
+    const results = await client.query(query);
+    return results.rows;
+  } finally {
+    client.release();
+  }
 }
 
 export async function postEmployee(text: string, eventID?: string) {
@@ -38,43 +40,46 @@ export async function postEmployee(text: string, eventID?: string) {
   } catch (err) {
     throw err;
   }
-
   const client = await db.connect();
+  try {
+    await client.query("BEGIN;");
+    await client.query(
+      "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS, permission text) ON COMMIT DROP;"
+    );
 
-  await client.query("BEGIN;");
-  await client.query(
-    "CREATE TEMP TABLE tmp_table (LIKE employees INCLUDING DEFAULTS, permission text) ON COMMIT DROP;"
-  );
+    const ingestStream = client.query(
+      copyFrom(
+        "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
+      )
+    );
 
-  const ingestStream = client.query(
-    copyFrom(
-      "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
-    )
-  );
-  const sourceStream = fs.createReadStream(path.join("/tmp", "empleados.csv"));
-  await pipeline(sourceStream, ingestStream);
+    const sourceStream = fs.createReadStream(
+      path.resolve(path.join(process.cwd(), "/tmp", "empleados.csv"))
+    );
 
-  const idsResults = await client.query(
-    "INSERT INTO employees(id, name, email, cedula, company) SELECT id, name, email, cedula, company FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
-  );
+    await pipeline(sourceStream, ingestStream);
 
-  const mappedEventsEmployeesValues = idsResults.rows.map((v) => [
-    eventID,
-    v.id,
-    v.permission,
-  ]);
-  /// maybe move this to another function
+    const idsResults = await client.query(
+      "INSERT INTO employees(id, name, email, cedula, company) SELECT id, name, email, cedula, company FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
+    );
 
-  const results = await client.query(
-    format(
-      "INSERT INTO events_employees(event_id, employee_id, permission) VALUES %L ON CONFLICT (event_id, employee_id) DO UPDATE set permission = excluded.permission",
-      mappedEventsEmployeesValues
-    )
-  );
-  console.log(results);
-  await client.query("COMMIT;");
+    const mappedEventsEmployeesValues = idsResults.rows.map((v) => [
+      eventID,
+      v.id,
+      v.permission,
+    ]);
+    /// maybe move this to another function
 
-  client.release();
+    await client.query(
+      format(
+        "INSERT INTO events_employees (event_id, employee_id, permission) VALUES %L ON CONFLICT DO NOTHING",
+        mappedEventsEmployeesValues
+      )
+    );
+    await client.query("COMMIT;");
+  } finally {
+    client.release();
+  }
 }
 
 // ON CONFLICT (event_id, employee_id) DO UPDATE SET event_id = excluded.event_id, employee_id = excluded.employee_id RETURNING (event_id, employee_id)

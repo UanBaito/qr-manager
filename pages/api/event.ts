@@ -10,7 +10,7 @@ export async function getEvent(eventID?: string, employeeID?: string) {
   } else if (employeeID) {
     /// send events from employee
     query = format(
-      "SELECT events.id, events.name, events_employees.has_printed_qr FROM events_employees, events WHERE events_employees.event_id = events.id AND events_employees.employee_id = '%s' ORDER BY name DESC",
+      "SELECT events.id, events.name, events_employees.has_printed_qr, events_employees.has_generated_qr FROM events_employees, events WHERE events_employees.event_id = events.id AND events_employees.employee_id = '%s' ORDER BY name DESC",
       employeeID
     );
   } else {
@@ -19,9 +19,12 @@ export async function getEvent(eventID?: string, employeeID?: string) {
   }
 
   const client = await db.connect();
-  const results = await client.query(query);
-  client.release();
-  return results.rows;
+  try {
+    const results = await client.query(query);
+    return results.rows;
+  } finally {
+    client.release();
+  }
 }
 
 export default async function handler(

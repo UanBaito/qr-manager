@@ -22,8 +22,6 @@ export default function CSVUpload({
   }, [messageDivRef.current]);
 
   async function handleSubmit(file: File) {
-    console.log(file);
-
     if (file) {
       const text = await file.text();
       employeesMutation.mutate(text);

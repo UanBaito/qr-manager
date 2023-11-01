@@ -1,0 +1,19 @@
+.button {
+  border: none;
+  display: inline;
+  position: absolute;
+  top: 3%;
+  left: 2%;
+  z-index: 1;
+  color: $text-500;
+  background-color: transparent;
+  padding: 0;
+
+  .icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+.button:hover {
+  cursor: pointer;
+}

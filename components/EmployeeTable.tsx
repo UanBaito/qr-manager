@@ -5,13 +5,14 @@ import { FaEye } from "react-icons/fa6";
 import { useQuery } from "@tanstack/react-query";
 import { baseUrl } from "../lib/constants";
 import { ReactNode } from "react";
+import BeatLoader from "react-spinners/BeatLoader";
 
-export default function EmployeeTable({ employee }: { employee: employee }) {
+export default function EmployeeTable({ employeeID }: { employeeID: string }) {
   const eventsQuery = useQuery({
-    queryKey: ["events", employee.id],
+    queryKey: ["events", employeeID],
     queryFn: async () => {
       const response = await fetch(
-        `${baseUrl}/api/event?employeeID=${employee.id}`
+        `${baseUrl}/api/event?employeeID=${employeeID}`
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -24,21 +25,24 @@ export default function EmployeeTable({ employee }: { employee: employee }) {
   let mappedTable: ReactNode[] = [];
   if (!eventsQuery.isLoading && !eventsQuery.isError) {
     const events: event[] = eventsQuery.data;
-    console.log(events);
 
     events.forEach((event: event) => {
       event.print = (
-        <PrintButton employee_id={employee.id} event_id={event.id} />
+        <PrintButton
+          employee_id={employeeID}
+          event_id={event.id}
+          has_printed_qr={event.has_printed_qr}
+          has_generated_qr={event.has_generated_qr}
+        />
       );
       event.has_printed_qr = event.has_printed_qr ? "Si" : "No";
+      event.has_generated_qr = event.has_generated_qr ? "Si" : "No";
     });
 
     mappedTable = events.map((eventRow) => {
       return <EventTableRow eventRow={eventRow} key={eventRow.id} />;
     });
   }
-
-  console.log(mappedTable);
 
   return (
     <div className={styles.container}>
@@ -49,7 +53,8 @@ export default function EmployeeTable({ employee }: { employee: employee }) {
         <thead>
           <tr>
             <th>Evento</th>
-            <th>¿Ha imprimido el código QR?</th>
+            <th>¿Ha imprimido el cintillo?</th>
+            <th>¿Ha generado el código QR?</th>
           </tr>
         </thead>
         <tbody>
@@ -57,9 +62,7 @@ export default function EmployeeTable({ employee }: { employee: employee }) {
         </tbody>
       </table>
       {eventsQuery.isLoading ? (
-        <>loading</>
-      ) : eventsQuery.isError ? (
-        <>error</>
+        <BeatLoader className={styles.icon} color="#6784c0" />
       ) : null}
     </div>
   );
@@ -74,8 +77,8 @@ export function EventTableRow({ eventRow }: { eventRow: event }) {
     }
   }
 
-  const mappedCells = cells.map((cells) => {
-    return <td key={"cell-" + cells}>{cells}</td>;
+  const mappedCells = cells.map((cells, index) => {
+    return <td key={"cell-" + cells + "-" + index}>{cells}</td>;
   });
   return (
     <tr>

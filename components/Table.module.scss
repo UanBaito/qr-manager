@@ -4,7 +4,7 @@
   padding: 0.4rem;
   min-height: 350px;
   background-color: $background-200;
-
+  position: relative;
   .table_title_container {
     border-bottom: 1px solid $secondary-700;
     padding: 0.5rem;
@@ -42,4 +42,11 @@
       }
     }
   }
+}
+
+.icon {
+  position: absolute;
+  bottom: 50%;
+  right: 50%;
+  transform: translate(50%, 50%);
 }
