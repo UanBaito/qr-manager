@@ -33,10 +33,7 @@ export async function getEmployee(eventID?: string, employeeID?: string) {
   }
 }
 
-export async function postEmployee(
-  stream: ReadableStream<Uint8Array>,
-  eventID?: string
-) {
+export async function postEmployee(text: string, eventID?: string) {
   const client = await db.connect();
   try {
     await client.query("BEGIN;");
@@ -49,8 +46,8 @@ export async function postEmployee(
         "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
       )
     );
-    console.log(stream);
-    await pipeline(stream, ingestStream);
+
+    await pipeline(text, ingestStream);
 
     const idsResults = await client.query(
       "INSERT INTO employees(id, name, email, cedula, company) SELECT id, name, email, cedula, company FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
@@ -103,8 +100,9 @@ export default async function handler(
   if (req.method === "POST") {
     /// TODO: fix this part here
     try {
-      const { stream, eventID } = JSON.parse(req.body);
-      await postEmployee(stream, eventID);
+      const { text, eventID } = JSON.parse(req.body);
+      console.log(text);
+      await postEmployee(text, eventID);
       res.send("Database updated");
     } catch (err) {
       console.log(err);

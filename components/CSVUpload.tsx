@@ -24,15 +24,17 @@ export default function CSVUpload({
 
   async function handleSubmit(file: File) {
     if (file) {
-      employeesMutation.mutate(file.stream());
+      const text = await file.text();
+
+      employeesMutation.mutate(text);
     }
   }
 
   const employeesMutation = useMutation({
-    mutationFn: async (stream: ReadableStream<Uint8Array>) => {
+    mutationFn: async (text: string) => {
       const res = await fetch(`${baseUrl}/api/employee`, {
         method: "POST",
-        body: JSON.stringify({ stream, eventID }),
+        body: JSON.stringify({ text, eventID }),
       });
       if (!res.ok) {
         throw new Error("something went wrong");
