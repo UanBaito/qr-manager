@@ -43,14 +43,14 @@ export async function postEmployee(text: string, eventID?: string) {
 
     const ingestStream = client.query(
       copyFrom(
-        "COPY tmp_table(name, email, company, permission, cedula) FROM STDIN DELIMITER ',' CSV HEADER;"
+        "COPY tmp_table(company, name, cedula, permission) FROM STDIN DELIMITER ',' CSV HEADER;"
       )
     );
 
     await pipeline(text, ingestStream);
 
     const idsResults = await client.query(
-      "INSERT INTO employees(id, name, email, cedula, company) SELECT id, name, email, cedula, company FROM tmp_table ON CONFLICT (cedula) DO UPDATE SET cedula = excluded.cedula RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
+      "INSERT INTO employees(id, name, cedula, company) SELECT id, name, cedula, company FROM tmp_table RETURNING id, (SELECT permission FROM tmp_table where tmp_table.name = employees.name)"
     );
 
     const mappedEventsEmployeesValues = idsResults.rows.map((v) => [
