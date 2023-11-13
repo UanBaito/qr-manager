@@ -61,6 +61,8 @@ export default function EventTable({ eventID }: { eventID: string }) {
               <th>¿Ha imprimido el cintillo?</th>
               <th>Acceso</th>
               <th>¿Ha generado el código QR?</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
