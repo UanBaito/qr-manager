@@ -4,15 +4,16 @@ import { FaEye } from "react-icons/fa6";
 import PrintButton from "./PrintButton";
 import { baseUrl, formatCedula } from "../lib/constants";
 import { useQuery } from "@tanstack/react-query";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import BeatLoader from "react-spinners/BeatLoader";
 
 export default function EventTable({ eventID }: { eventID: string }) {
+  const [searchQuery, setSearchQuery] = useState("");
   const employeesQuery = useQuery({
     queryKey: ["employees", eventID],
     queryFn: async () => {
       const response = await fetch(
-        `${baseUrl}/api/employee?eventID=${eventID}`
+        `${baseUrl}/api/employee?eventID=${eventID}`,
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -48,8 +49,11 @@ export default function EventTable({ eventID }: { eventID: string }) {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.table_title_container}>
+    <section
+      className={styles.container}
+      aria-labelledby="table_title_container"
+    >
+      <div className={styles.table_title_container} id="table_title_container">
         <h2>Empleados asignados a este evento</h2>
       </div>
       <table>
@@ -68,10 +72,10 @@ export default function EventTable({ eventID }: { eventID: string }) {
             : null}
         </tbody>
       </table>
-      {employeesQuery.isLoading ? (
-        <BeatLoader className={styles.icon} color="#6784c0" />
-      ) : null}
-    </div>
+      {employeesQuery.isLoading
+        ? <BeatLoader className={styles.icon} color="#6784c0" />
+        : null}
+    </section>
   );
 }
 
@@ -96,5 +100,12 @@ export function EventTableRow({ employeeRow }: { employeeRow: employee }) {
         </Link>
       </td>
     </tr>
+  );
+}
+
+export function Searchbar({ searchQuery }: { searchQuery: string }) {
+  return (
+    <div>
+    </div>
   );
 }
