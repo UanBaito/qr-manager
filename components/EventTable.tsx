@@ -12,7 +12,7 @@ export default function EventTable({ eventID }: { eventID: string }) {
     queryKey: ["employees", eventID],
     queryFn: async () => {
       const response = await fetch(
-        `${baseUrl}/api/employee?eventID=${eventID}`
+        `${baseUrl}/api/employee?eventID=${eventID}`,
       );
       if (!response.ok) {
         throw new Error("Something went wrong");
@@ -52,25 +52,27 @@ export default function EventTable({ eventID }: { eventID: string }) {
       <div className={styles.table_title_container}>
         <h2>Empleados asignados a este evento</h2>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Cédula</th>
-            <th>¿Ha imprimido el cintillo?</th>
-            <th>Acceso</th>
-            <th>¿Ha generado el código QR?</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!employeesQuery.isError && !employeesQuery.isLoading
-            ? mappedTable
-            : null}
-        </tbody>
-      </table>
-      {employeesQuery.isLoading ? (
-        <BeatLoader className={styles.icon} color="#6784c0" />
-      ) : null}
+      <div className={styles.table_wrapper}>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cédula</th>
+              <th>¿Ha imprimido el cintillo?</th>
+              <th>Acceso</th>
+              <th>¿Ha generado el código QR?</th>
+            </tr>
+          </thead>
+          <tbody>
+            {!employeesQuery.isError && !employeesQuery.isLoading
+              ? mappedTable
+              : null}
+          </tbody>
+        </table>
+      </div>
+      {employeesQuery.isLoading
+        ? <BeatLoader className={styles.icon} color="#6784c0" />
+        : null}
     </div>
   );
 }
