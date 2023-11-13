@@ -73,6 +73,7 @@ export default function EventTable({ eventID }: { eventID: string }) {
       <div className={styles.table_title_container}>
         <h2 id="table_title_container">Empleados asignados a este evento</h2>
       </div>
+      <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <div className={styles.table_wrapper}>
         <table>
           <thead>
@@ -92,26 +93,6 @@ export default function EventTable({ eventID }: { eventID: string }) {
           </tbody>
         </table>
       </div>
-      <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Cédula</th>
-            <th>¿Ha imprimido el cintillo?</th>
-            <th>Acceso</th>
-            <th>¿Ha generado el código QR?</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!employeesQuery.isError && !employeesQuery.isLoading
-            ? mappedTable
-            : null}
-        </tbody>
-      </table>
-      {employeesQuery.isLoading
-        ? <BeatLoader className={styles.icon} color="#6784c0" />
-        : null}
     </section>
   );
 }
