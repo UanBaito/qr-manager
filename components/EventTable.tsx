@@ -25,25 +25,42 @@ export default function EventTable({ eventID }: { eventID: string }) {
 
   let mappedTable: ReactNode[] = [];
 
+  function filterEmployees(employeesList: employee[], searchQuery: string) {
+    if (searchQuery === "") {
+      return employeesList;
+    } else {
+      const queryRegex = new RegExp(`${searchQuery}`, "i");
+      const filteredEmployees = employeesList.filter((
+        employee,
+      ) => (queryRegex.test(employee.name)));
+      return filteredEmployees;
+    }
+  }
+
   if (!employeesQuery.isLoading && !employeesQuery.isError) {
     const employees: employee[] = employeesQuery.data;
 
-    employees.forEach((employee: employee) => {
-      employee.cedula = formatCedula(employee.cedula);
-      employee.print = (
+    const filteredEmployees = filterEmployees(employees, searchQuery);
+
+    const mappedEmployees = filteredEmployees.map((employee: employee) => {
+      //Employee object must be cloned or else formatCedula will be called in the same object each render and 
+      //generate some bugs.
+      let employeeClone = {...employee}
+      employeeClone.cedula = formatCedula(employeeClone.cedula);
+      employeeClone.print = (
         <PrintButton
-          employee_id={employee.id}
+          employee_id={employeeClone.id}
           event_id={eventID}
-          has_printed_qr={employee.has_printed_qr}
-          has_generated_qr={employee.has_generated_qr}
+          has_printed_qr={employeeClone.has_printed_qr}
+          has_generated_qr={employeeClone.has_generated_qr}
         />
       );
-
-      employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
-      employee.has_generated_qr = employee.has_generated_qr ? "Si" : "No";
+      employeeClone.has_printed_qr = employeeClone.has_printed_qr ? "Si" : "No";
+      employeeClone.has_generated_qr = employeeClone.has_generated_qr ? "Si" : "No";
+      return employeeClone
     });
 
-    mappedTable = employees.map((employeeRow) => {
+    mappedTable = mappedEmployees.map((employeeRow) => {
       return <EventTableRow employeeRow={employeeRow} key={employeeRow.id} />;
     });
   }
@@ -53,9 +70,10 @@ export default function EventTable({ eventID }: { eventID: string }) {
       className={styles.container}
       aria-labelledby="table_title_container"
     >
-      <div className={styles.table_title_container} id="table_title_container">
-        <h2>Empleados asignados a este evento</h2>
+      <div className={styles.table_title_container}>
+        <h2 id="table_title_container">Empleados asignados a este evento</h2>
       </div>
+      <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <table>
         <thead>
           <tr>
@@ -103,9 +121,22 @@ export function EventTableRow({ employeeRow }: { employeeRow: employee }) {
   );
 }
 
-export function Searchbar({ searchQuery }: { searchQuery: string }) {
+export function Searchbar(
+  { searchQuery, setSearchQuery }: {
+    searchQuery: string;
+    setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  },
+) {
   return (
-    <div>
-    </div>
+    <form>
+      <section>
+        <input
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+        />
+      </section>
+    </form>
   );
 }
