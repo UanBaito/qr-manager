@@ -111,7 +111,7 @@ export default function EventTable({ eventID }: { eventID: string }) {
       {employeesQuery.isLoading
         ? <BeatLoader className={styles.icon} color="#6784c0" />
         : null}
-    </div>
+    </section>
   );
 }
 
