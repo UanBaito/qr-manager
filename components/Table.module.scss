@@ -5,6 +5,7 @@
   min-height: 350px;
   background-color: $background-200;
   position: relative;
+  width: 100%;
   .table_title_container {
     border-bottom: 1px solid $secondary-700;
     padding: 0.5rem;
@@ -13,6 +14,34 @@
       display: inline;
       font-size: 1rem;
       margin: 0;
+    }
+  }
+
+  .searchbar {
+    width: 100%;
+    padding: 0.5rem;
+
+    section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      label {
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        background-color: transparent;
+        border: none;
+        color: $text-100;
+        font-size: 1rem;
+        border-bottom: 2px solid $primary-400;
+        transition: border-bottom 0.2s ease;
+        &:focus {
+          border-bottom: 2px solid $primary-700;
+          outline: none;
+        }
+      }
     }
   }
 
