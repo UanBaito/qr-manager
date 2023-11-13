@@ -43,9 +43,9 @@ export default function EventTable({ eventID }: { eventID: string }) {
     const filteredEmployees = filterEmployees(employees, searchQuery);
 
     const mappedEmployees = filteredEmployees.map((employee: employee) => {
-      //Employee object must be cloned or else formatCedula will be called in the same object each render and 
+      //Employee object must be cloned or else formatCedula will be called in the same object each render and
       //generate some bugs.
-      let employeeClone = {...employee}
+      let employeeClone = { ...employee };
       employeeClone.cedula = formatCedula(employeeClone.cedula);
       employeeClone.print = (
         <PrintButton
@@ -56,8 +56,10 @@ export default function EventTable({ eventID }: { eventID: string }) {
         />
       );
       employeeClone.has_printed_qr = employeeClone.has_printed_qr ? "Si" : "No";
-      employeeClone.has_generated_qr = employeeClone.has_generated_qr ? "Si" : "No";
-      return employeeClone
+      employeeClone.has_generated_qr = employeeClone.has_generated_qr
+        ? "Si"
+        : "No";
+      return employeeClone;
     });
 
     mappedTable = mappedEmployees.map((employeeRow) => {
@@ -92,6 +94,9 @@ export default function EventTable({ eventID }: { eventID: string }) {
           </tbody>
         </table>
       </div>
+      {employeesQuery.isLoading
+        ? <BeatLoader className={styles.icon} color="#6784c0" />
+        : null}
     </section>
   );
 }
@@ -127,9 +132,16 @@ export function Searchbar(
   },
 ) {
   return (
-    <form onSubmit={(e) => {e.preventDefault()}} className={styles.searchbar}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
+      className={styles.searchbar}
+    >
       <section aria-labelledby="employee_search_label">
-        <label htmlFor="employee_search" id="employee_search_label">Búsqueda:</label>
+        <label htmlFor="employee_search" id="employee_search_label">
+          Búsqueda:
+        </label>
         <input
           id="employee_search"
           value={searchQuery}
