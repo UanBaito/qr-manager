@@ -149,7 +149,7 @@ export function Searchbar(
   return (
     <form onSubmit={(e) => {e.preventDefault()}} className={styles.searchbar}>
       <section aria-labelledby="employee_search_label">
-        <label htmlFor="employee_search" id="employee_search_label">Search</label>
+        <label htmlFor="employee_search" id="employee_search_label">Búsqueda:</label>
         <input
           id="employee_search"
           value={searchQuery}
