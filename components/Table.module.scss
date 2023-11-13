@@ -26,7 +26,8 @@
     table {
       width: 100%;
       text-align: center;
-      border-collapse: collapse;
+      border-spacing: 0;
+      border-collapse: separate;
 
       a {
         color: $text-500;
@@ -39,13 +40,21 @@
         padding: 0.6rem;
       }
       thead {
+        position: sticky;
+        top: 0;
+        background-color: $background-300;
+        z-index: 99;
         tr {
           width: 20%;
+          th {
+            border-bottom: 1px solid $secondary-700;
+          }
         }
       }
       tbody {
         td {
           text-transform: capitalize;
+          border-top: 1px solid $secondary-700;
         }
       }
     }
