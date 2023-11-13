@@ -17,13 +17,6 @@
     }
   }
 
-  .table_wrapper {
-    max-width: 100%;
-    overflow-x: scroll;
-    table {
-      width: 100%;
-      text-align: center;
-      border-collapse: collapse;
   .searchbar {
     width: 100%;
     padding: 0.5rem;
@@ -52,10 +45,13 @@
     }
   }
 
-  table {
-    width: 100%;
-    text-align: center;
-    border-collapse: collapse;
+  .table_wrapper {
+    max-width: 100%;
+    overflow-x: scroll;
+    table {
+      width: 100%;
+      text-align: center;
+      border-collapse: collapse;
 
       a {
         color: $text-500;
