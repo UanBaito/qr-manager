@@ -49,7 +49,6 @@ export default function EventTable({ eventID }: { eventID: string }) {
       //Employee object must be cloned or else formatCedula will be called in the same object each render and
       //generate some bugs.
       let employeeClone = { ...employee };
-      employeeClone.cedula = formatCedula(employeeClone.cedula);
       employeeClone.print = (
         <PrintButton
           employee_id={employeeClone.id}
