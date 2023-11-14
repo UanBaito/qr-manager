@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from "./Table.module.scss";
 import { FaEye } from "react-icons/fa6";
 import PrintButton from "./PrintButton";
-import { baseUrl, formatCedula } from "../lib/constants";
+import { baseUrl } from "../lib/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import BeatLoader from "react-spinners/BeatLoader";
