@@ -32,13 +32,16 @@ export default function EventTable({ eventID }: { eventID: string }) {
       const queryRegex = new RegExp(`${searchQuery}`, "i");
       const filteredEmployees = employeesList.filter((
         employee,
-      ) => (queryRegex.test(employee.name)));
+      ) => (queryRegex.test(employee.name) ||
+        queryRegex.test(employee.company) || queryRegex.test(employee.cedula))
+      );
       return filteredEmployees;
     }
   }
 
   if (!employeesQuery.isLoading && !employeesQuery.isError) {
     const employees: employee[] = employeesQuery.data;
+    console.log(employees)
 
     const filteredEmployees = filterEmployees(employees, searchQuery);
 
