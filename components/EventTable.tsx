@@ -28,7 +28,6 @@ export default function EventTable({ eventID }: { eventID: string }) {
     const employees: employee[] = employeesQuery.data;
 
     employees.forEach((employee: employee) => {
-      employee.cedula = formatCedula(employee.cedula);
       employee.print = (
         <PrintButton
           employee_id={employee.id}
