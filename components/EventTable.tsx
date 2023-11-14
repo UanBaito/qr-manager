@@ -41,7 +41,6 @@ export default function EventTable({ eventID }: { eventID: string }) {
 
   if (!employeesQuery.isLoading && !employeesQuery.isError) {
     const employees: employee[] = employeesQuery.data;
-    console.log(employees)
 
     const filteredEmployees = filterEmployees(employees, searchQuery);
 
