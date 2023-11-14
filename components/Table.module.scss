@@ -42,6 +42,12 @@
       tbody {
         td {
           text-transform: capitalize;
+          &.yes {
+            color: $sucess-500;
+          }
+          &.no {
+            color: $error-500;
+          }
         }
       }
     }

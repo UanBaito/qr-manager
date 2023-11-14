@@ -36,9 +36,6 @@ export default function EventTable({ eventID }: { eventID: string }) {
           has_generated_qr={employee.has_generated_qr}
         />
       );
-
-      employee.has_printed_qr = employee.has_printed_qr ? "Si" : "No";
-      employee.has_generated_qr = employee.has_generated_qr ? "Si" : "No";
     });
 
     mappedTable = employees.map((employeeRow) => {
@@ -86,8 +83,14 @@ export function EventTableRow({ employeeRow }: { employeeRow: employee }) {
     }
   }
 
-  const mappedCells = cells.map((cells, index) => {
-    return <td key={"cell-" + cells + "-" + index}>{cells}</td>;
+  const mappedCells = cells.map((cell, index) => {
+    if (cell === true) {
+      return <td className={styles.yes} key={"cell-" + cells + "-" + index}>Si</td>;
+    } else if (cell === false) {
+      return <td className={styles.no} key={"cell-" + cells + "-" + index}>No</td>;
+    } else {
+      return <td key={"cell-" + cells + "-" + index}>{cell}</td>;
+    }
   });
   return (
     <tr>
