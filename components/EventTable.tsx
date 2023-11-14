@@ -83,7 +83,7 @@ export default function EventTable({ eventID }: { eventID: string }) {
             <tr>
               <th>Nombre</th>
               <th>Cédula</th>
-              <th>Compania</th>
+              <th>Compañia</th>
               <th>¿Ha imprimido el cintillo?</th>
               <th>Acceso</th>
               <th>¿Ha generado el código QR?</th>
