@@ -4,10 +4,6 @@ import format from "pg-format";
 
 import { from as copyFrom } from "pg-copy-streams";
 import { pipeline } from "node:stream/promises";
-import path from "path";
-import fs from "fs";
-import fsAsync from "fs/promises";
-import { ReadableStream } from "stream/web";
 
 export async function getEmployee(eventID?: string, employeeID?: string) {
   let query = "";
